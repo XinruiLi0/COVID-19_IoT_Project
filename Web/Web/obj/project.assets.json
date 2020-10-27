@@ -8,19 +8,19 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\server\\.nuget\\packages\\": {}
+    "C:\\Users\\nickc\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\server\\Desktop\\Project\\COVID-19_LoT_Project\\Web\\Web\\Web.csproj",
+      "projectUniqueName": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
       "projectName": "Web",
-      "projectPath": "C:\\Users\\server\\Desktop\\Project\\COVID-19_LoT_Project\\Web\\Web\\Web.csproj",
-      "packagesPath": "C:\\Users\\server\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\server\\Desktop\\Project\\COVID-19_LoT_Project\\Web\\Web\\obj\\",
+      "projectPath": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
+      "packagesPath": "C:\\Users\\nickc\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\server\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\nickc\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
