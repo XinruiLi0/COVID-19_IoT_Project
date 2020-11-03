@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/13pdISybzED3+2snOfD+g6yU8iKGIIoiIL33swe+MlVKPqWAdAMfspwJk5Ww9o1RMPNXGU2tZ8cVo6/Qb9zxQ==",
+  "dgSpecHash": "jPH5gBmAtxfTX6p96FFzMqBfGZdAEorjD3zWtq9ySI+ARnpQvk2E+W8J2IRpKaUn4AqySSPs1U8MDNXOVrVCig==",
   "success": true,
-  "projectFilePath": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
+  "projectFilePath": "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

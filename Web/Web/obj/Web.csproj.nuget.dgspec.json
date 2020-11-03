@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj": {}
+    "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj": {
+    "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
+        "projectUniqueName": "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
         "projectName": "Web",
-        "projectPath": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
+        "projectPath": "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
         "packagesPath": "C:\\Users\\nickc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nickc\\Source\\Repos\\COVID-19_IoT_Project\\Web\\Web\\obj\\",
+        "outputPath": "C:\\Users\\nickc\\source\\repos\\COVID-19_IoT_Project\\Web\\Web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nickc\\AppData\\Roaming\\NuGet\\NuGet.Config",
