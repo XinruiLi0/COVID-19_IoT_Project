@@ -1,8 +1,29 @@
 ﻿@*
     ViewData["Title"] = "Login";
 *@
+<style type="text/css">
+    img {
+        height: 120%;
+        width: 120%;
+    }
+</style>
 
-<div class="col-md-6 offset-md-3">
-    <h2> Choose Account Type </h2>
-    <input type="text">
+<div class="col-lg-6 offset-md-3">
+    <h1 class="text-primary"> Choose Account Type </h1>
+
+    <div class="row">
+    <div class="col-lg-3 col-md-6" style="position:relative;">
+        <img src="~/doctor.jpg" alt="doctors">
+        <input id="button1" type="button" value="Doctor" style="width:50%; left:33%; bottom:-25%; position: absolute;">
+    </div>
+    <div class="col-lg-3 col-mid-6" style="position:relative;">
+        <img src="~/user.png" alt="users">
+        <input id="button2" type="button" value ="User" style="width:50%; left:33%; bottom:-25%; position: absolute;">
+    </div>
+    <div class="col-lg-3 col-mid-6" style="position:relative;">
+        <img src="~/guard.png" alt="users">
+        <input id="button3" type="button" value ="Guard" style="width:50%; left:33%; bottom:-25%; position: absolute;">
+    </div>
+
+    </div>
 </div>
