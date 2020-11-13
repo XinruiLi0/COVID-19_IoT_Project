@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ZJiT4TDQbGZs8EQow5yhTX8yjYWOcn6oascItCao768LYUhWO11to9dZ4ns1kwlmG56MBVTfd29yHmvBLwXpuA==",
+  "dgSpecHash": "nQHN21mRjvwZFrZ5gYypAwWN76urcE2eFJDLBqaMyZMgIE6B2bdPihjctvbxw/cGr4alglDAeHew8AoeHZB6Vw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\server\\Desktop\\Project\\COVID-19_LoT_Project\\Web\\Web\\Web.csproj",
+  "projectFilePath": "C:\\Users\\server\\Desktop\\Project\\COVID-19_IoT_Project\\Web\\Web\\Web.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
