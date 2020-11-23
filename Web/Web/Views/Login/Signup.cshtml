@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Login";
+
+
+}
+@model Web.Models.Guard
+
+    <style>
+        .col-center-block {
+            float: none;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".btn-success").on("click", function () {
+            $(".first").text("Hello Doctor, Please fill in the form below to start register.");
+            $(".doctor").attr("style", "display:block;");
+            $(".guard").attr("style", "display:none;");
+            $(".user").attr("style", "display:none;");
+        });
+        $(".btn-primary").on("click", function () {
+            $(".first").text("Hello User, Please fill in the form below to start register.");
+            $(".doctor").attr("style", "display:none;");
+            $(".guard").attr("style", "display:none;");
+            $(".user").attr("style", "display:block;");
+        });
+        $(".btn-warning").on("click", function () {
+            $(".first").text("Hello Guard, Please fill in the form below to start register.");
+            $(".doctor").attr("style", "display:none;");
+            $(".guard").attr("style", "display:block;");
+            $(".user").attr("style", "display:none;");
+        });
+    });
+</script>
+
+<div>
+    <h1 class="text-primary col-xs-6 col-lg-6 col-md-6 col-sm-6 offset-3"> Choose Account Type </h1>
+
+    <div class="row">
+        <div class="col-xs-3 col-lg-3 col-md-3 col-sm-3 offset-1" style="position:relative;">
+            <img class="img-responsive" src="~/doctor.jpg" alt="doctors" style="width:100%; height:100%">
+            <input class="btn btn-success" type="button" value="Doctor" style="width:50%; left:25%; bottom:-1%; position: absolute;">
+        </div>
+        <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3" style="position:relative;">
+            <img class="img-responsive" src="~/user.png" alt="users" style="width:100%; height:100%">
+            <input class="btn btn-primary" type="button" value="User" style="width:50%; left:25%; bottom:-1%; position: absolute;">
+        </div>
+        <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
+            <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
+            <input class="btn btn-warning" type="button" value="Guard" style="width:50%; left:25%; bottom:-1%; position: absolute;">
+        </div>
+
+    </div>
+</div>
+<br>
+<h5 class="first text-primary col-xs-7 col-lg-7 col-md-7 col-sm-7 offset-3">
+    Hello Doctor, Please fill in the form below to start register.
+</h5>
+
+<div class="doctor bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block">
+
+    <form method="post" action =" ">
+        <fieldset>
+            <legend align="center" class="text-primary">Sign up for Doctor</legend>
+
+            <div class="form-group">
+                <label> First Name: </label>
+                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
+            </div>
+            <div class="form-group">
+                <label> Last Name: </label>
+                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
+            </div>
+            <div class="form-group">
+                <label> Doctor Certificate No: </label>
+                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your certificate" />
+            </div>
+            <div class="form-group">
+                <label>Email address: </label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label> Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+            </div>
+            <div class="form-group">
+                <label> Confirm Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit form</button>
+        </fieldset>
+    </form>
+</div>
+
+<div class="guard bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block" style="display: none;">
+
+    <form method="post" action =" ">
+        <fieldset>
+            <legend align="center" class="text-primary">Sign up for Guard</legend>
+
+            <div class="form-group">
+                <label> First Name: </label>
+                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
+            </div>
+            <div class="form-group">
+                <label> Last Name: </label>
+                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
+            </div>
+            <div class="form-group">
+                <label> Building No: </label>
+                <input class="form-control" type="text" name="Building" placeholder="Enter the building No that you in charge of " />
+            </div>
+            <div class="form-group">
+                <label>Email address: </label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label> Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+            </div>
+            <div class="form-group">
+                <label> Confirm Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit form</button>
+        </fieldset>
+    </form>
+</div>
+
+<div class="user bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block" style="display: none;">
+
+    <form method="post" action =" ">
+        <fieldset>
+            <legend align="center" class="text-primary">Sign up for User</legend>
+
+            <div class="form-group">
+                <label> First Name: </label>
+                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
+            </div>
+            <div class="form-group">
+                <label> Last Name: </label>
+                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
+            </div>
+            <div class="form-group">
+                <label> Passport No: </label>
+                <input class="form-control" type="text" name="Passport" placeholder="Enter Your Passport No" />
+            </div>
+            <div class="form-group">
+                <label>Email address: </label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label> Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+            </div>
+            <div class="form-group">
+                <label> Confirm Password: </label>
+                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit form</button>
+        </fieldset>
+    </form>
+</div>
+
+
+<p>
+    <br>
+    Already have Account? <a class="text-primary" asp-area="" asp-controller="Login" asp-action="Login">Log in</a>
+</p>
