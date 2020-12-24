@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
+		59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */; };
 		59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125D255E023900D2AE6B /* AppDelegate.swift */; };
 		59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125F255E023900D2AE6B /* SceneDelegate.swift */; };
 		59CD1262255E023900D2AE6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD1261255E023900D2AE6B /* ViewController.swift */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController_Extensions.swift; sourceTree = "<group>"; };
+		59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		59CD125A255E023900D2AE6B /* IVMSP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IVMSP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59CD125D255E023900D2AE6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59CD125F255E023900D2AE6B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -60,8 +64,10 @@
 			children = (
 				59CD125D255E023900D2AE6B /* AppDelegate.swift */,
 				59CD125F255E023900D2AE6B /* SceneDelegate.swift */,
+				59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */,
 				59CD1261255E023900D2AE6B /* ViewController.swift */,
 				59CD1263255E023900D2AE6B /* Main.storyboard */,
+				59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */,
 				59CD1269255E023900D2AE6B /* Assets.xcassets */,
 				59CD126B255E023900D2AE6B /* LaunchScreen.storyboard */,
 				59CD126E255E023900D2AE6B /* Info.plist */,
@@ -140,9 +146,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */,
 				59CD1262255E023900D2AE6B /* ViewController.swift in Sources */,
 				59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */,
 				59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */,
+				59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */,
 				59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +299,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 45B78F727M;
 				INFOPLIST_FILE = IVMSP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -309,6 +318,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 45B78F727M;
 				INFOPLIST_FILE = IVMSP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
