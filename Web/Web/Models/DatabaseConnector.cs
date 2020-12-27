@@ -9,7 +9,7 @@ namespace Web.Models
 {
     public static class DatabaseConnector
     {
-        static SqlConnection connection = new SqlConnection("Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;");
+        private static SqlConnection connection = new SqlConnection("Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;");
 
         public static Dictionary<string,string> userRegister(string userName, string userPassword, int userRole)
         {
