@@ -28,7 +28,7 @@ namespace Web.Models
             try
             {
                 connection.Open();
-                SqlDataAdapter adp = new SqlDataAdapter("", connection);
+                SqlDataAdapter adp = new SqlDataAdapter($"select * from AccountLogin where userName = '{userName}'", connection);
                 adp.Fill(ds);
             }
             catch
@@ -43,21 +43,21 @@ namespace Web.Models
 
             // Do something with data set
 
-            if (true)
+            if (userName == null)
             {
                 return new Dictionary<string, string>
                 {
                     {"result","error"}, {"message", "Account not exist."}
                 };
             }
-            else if (true)
+            else if (userPassword == null)
             {
                 return new Dictionary<string, string>
                 {
                     {"result","error"}, {"message", "Password incorrect."}
                 };
             }
-            else if (true)
+            else if (userRole == 0)
             {
                 return new Dictionary<string, string>
                 {
