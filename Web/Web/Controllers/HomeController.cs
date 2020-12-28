@@ -29,16 +29,5 @@ namespace Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [HttpPost]
-        public Dictionary<string, string> userLogin(string userName, string userPassword, int userRole) 
-        {
-            return DatabaseConnector.userLogin(userName, userPassword, userRole);
-        }
-
-        [HttpPost]
-        public Dictionary<string, string> userRegister(string userName, string userPassword, int userRole)
-        {
-            return DatabaseConnector.userRegister(userName, userPassword, userRole);
-        }
     }
 }
