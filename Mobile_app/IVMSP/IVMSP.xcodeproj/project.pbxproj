@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5952FB7925995D6800958711 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952FB7825995D6800958711 /* HomeVC.swift */; };
 		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
 		59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */; };
 		59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125D255E023900D2AE6B /* AppDelegate.swift */; };
 		59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125F255E023900D2AE6B /* SceneDelegate.swift */; };
-		59CD1262255E023900D2AE6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD1261255E023900D2AE6B /* ViewController.swift */; };
+		59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD1261255E023900D2AE6B /* LoginVC.swift */; };
 		59CD1265255E023900D2AE6B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 59CD1263255E023900D2AE6B /* Main.storyboard */; };
 		59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 59CD1266255E023900D2AE6B /* IVMSP.xcdatamodeld */; };
 		59CD126A255E023900D2AE6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 59CD1269255E023900D2AE6B /* Assets.xcassets */; };
@@ -19,12 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5952FB7825995D6800958711 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController_Extensions.swift; sourceTree = "<group>"; };
 		59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		59CD125A255E023900D2AE6B /* IVMSP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IVMSP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59CD125D255E023900D2AE6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59CD125F255E023900D2AE6B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		59CD1261255E023900D2AE6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		59CD1261255E023900D2AE6B /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		59CD1264255E023900D2AE6B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		59CD1267255E023900D2AE6B /* IVMSP.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = IVMSP.xcdatamodel; sourceTree = "<group>"; };
 		59CD1269255E023900D2AE6B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -43,6 +45,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5952FB7725995D1500958711 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */,
+				59CD1261255E023900D2AE6B /* LoginVC.swift */,
+				59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */,
+				5952FB7825995D6800958711 /* HomeVC.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		59CD1251255E023900D2AE6B = {
 			isa = PBXGroup;
 			children = (
@@ -62,12 +75,10 @@
 		59CD125C255E023900D2AE6B /* IVMSP */ = {
 			isa = PBXGroup;
 			children = (
+				5952FB7725995D1500958711 /* ViewController */,
 				59CD125D255E023900D2AE6B /* AppDelegate.swift */,
 				59CD125F255E023900D2AE6B /* SceneDelegate.swift */,
-				59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */,
-				59CD1261255E023900D2AE6B /* ViewController.swift */,
 				59CD1263255E023900D2AE6B /* Main.storyboard */,
-				59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */,
 				59CD1269255E023900D2AE6B /* Assets.xcassets */,
 				59CD126B255E023900D2AE6B /* LaunchScreen.storyboard */,
 				59CD126E255E023900D2AE6B /* Info.plist */,
@@ -147,7 +158,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */,
-				59CD1262255E023900D2AE6B /* ViewController.swift in Sources */,
+				5952FB7925995D6800958711 /* HomeVC.swift in Sources */,
+				59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */,
 				59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */,
 				59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */,
 				59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */,
