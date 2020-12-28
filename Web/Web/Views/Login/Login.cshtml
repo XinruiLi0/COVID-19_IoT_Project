@@ -6,8 +6,24 @@
     .bg-primary {
         background-color: #1a52c6;
     }
-
 </style>
+
+<script type="text/javascript">
+    function FormAjax() {
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Login/userLogin",
+            data: { "userName": $("#email").val(), "userPassword": $("#lastname").val(), "userRole": 1 },
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
+    };
+</script>
 
 <div class="bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block offset-3">
 
@@ -17,15 +33,17 @@
 
             <div class="form-group">
                 <label> Email address: </label>
-                <input class="form-control" type="email" name="Email" placeholder="Enter your email" />
+                <input id="email" class="form-control" type="email" name="Email" placeholder="Enter your email" />
             </div>
 
             <div class="form-group">
                 <label> Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+                <input id ="lastname" class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
             </div>
 
-            <button type="submit" class="btn btn-success"  asp-area="" asp-controller="UserPage" asp-action="Doctor"> Login </button>
+
+            <button id="login" onClick="FormAjax();"type="submit" class="btn btn-success"> Login </button>
+
         </fieldset>
     </form>
     <p>
