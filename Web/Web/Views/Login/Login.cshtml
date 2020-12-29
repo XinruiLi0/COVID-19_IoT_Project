@@ -24,7 +24,7 @@
                 type: "POST",
                 dataType: "text",
                 url: "/Login/userLogin",
-                data: { "userName": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
+                data: { "userEmail": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
                 success: function (data) {
                     alert(data);
                 },

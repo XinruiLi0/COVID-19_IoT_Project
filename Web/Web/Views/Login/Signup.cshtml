@@ -36,6 +36,83 @@
             $(".user").attr("style", "display:none;");
         });
     });
+
+    function DoctorAjax() {
+        if ($("#exampleInputEmail1").val() == "" || $("#password1").val() == "" || $("#dname").val() == "") {
+            alert("You leave email or password or username empty. Please fill in the blank to Register!");
+            return;
+        }
+        if (($("#conpassword1").val()) != ($("#password1").val())) {
+            alert("Your two password mismatch! Please do again!");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Login/userRegister",
+            data: {"userName": $("#dname").val(), "userEmail": $("#exampleInputEmail1").val(), "userPassword": $("#password1").val(), "userRole": 1 },
+            success: function (data) {
+                alert(data);
+                window.location.href = '@Url.Action("Signup", "Login")';
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
+    };
+
+    function GuardAjax() {
+        if ($("#exampleInputEmail2").val() == "" || $("#password2").val() == "" || $("#gname").val() == "") {
+            alert("You leave email or password or username empty. Please fill in the blank to Register!");
+            return;
+        }
+
+        if (($("#conpassword2").val()) != ($("#password2").val())) {
+            alert("Your two password mismatch! Please do again!");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Login/userRegister",
+            data: { "userName": $("#gname").val(), "userEmail": $("#exampleInputEmail2").val(), "userPassword": $("#password2").val(), "userRole": 2 },
+            success: function (data) {
+               alert(data);
+               window.location.href = '@Url.Action("Signup", "Login")';
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
+    };
+
+    function UserAjax() {
+        if ($("#exampleInputEmail3").val() == "" || $("#password3").val() == "" || $("#uname").val() == "") {
+            alert("You leave email or password or username empty. Please fill in the blank to Register!");
+            return;
+        }
+        if (($("#conpassword3").val())!=($("#password3").val())) {
+            alert("Your two password mismatch! Please do again!");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Login/userRegister",
+            data: {"userName": $("#uname").val(), "userEmail": $("#exampleInputEmail3").val(), "userPassword": $("#password3").val(), "userRole": 3 },
+            success: function (data) {
+               alert(data);
+               window.location.href = '@Url.Action("Signup", "Login")';
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
+    };
+
 </script>
 
 <div>
@@ -64,17 +141,13 @@
 
 <div class="doctor bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block">
 
-    <form method="post" action =" ">
+    <form>
         <fieldset>
             <legend align="center" class="text-primary">Sign up for Doctor</legend>
 
             <div class="form-group">
-                <label> First Name: </label>
-                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
-            </div>
-            <div class="form-group">
-                <label> Last Name: </label>
-                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
+                <label> Full Name: </label>
+                <input class="form-control" id="dname" type="text" name="Full Name" placeholder="Enter Your Full Name" />
             </div>
             <div class="form-group">
                 <label> Doctor Certificate No: </label>
@@ -86,86 +159,80 @@
             </div>
             <div class="form-group">
                 <label> Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+                <input class="form-control" type="password" id="password1" name="password" placeholder="Enter Your Password" />
             </div>
             <div class="form-group">
                 <label> Confirm Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+                <input class="form-control" type="password" id="conpassword1" placeholder="Confirm your password" />
             </div>
 
-            <button type="submit" class="btn btn-success">Submit form</button>
+            <input id="doctor" onClick="DoctorAjax();" type="button" name="Submit Register Form" value="Submit Register Form" class="btn btn-success">
         </fieldset>
     </form>
 </div>
 
 <div class="guard bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block" style="display: none;">
 
-    <form method="post" action =" ">
+    <form>
         <fieldset>
             <legend align="center" class="text-primary">Sign up for Guard</legend>
 
             <div class="form-group">
-                <label> First Name: </label>
-                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
+                <label> Full Name: </label>
+                <input class="form-control" id="gname" type="text" name="Full Name" placeholder="Enter Your Full Name" />
             </div>
-            <div class="form-group">
-                <label> Last Name: </label>
-                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
-            </div>
+
             <div class="form-group">
                 <label> Building No: </label>
                 <input class="form-control" type="text" name="Building" placeholder="Enter the building No that you in charge of " />
             </div>
             <div class="form-group">
                 <label>Email address: </label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" class="form-control" id="exampleInputEmail2" aria-describedby="emailHelp" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label> Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+                <input class="form-control" type="password" id="password2" name="password2" placeholder="Enter Your Password" />
             </div>
             <div class="form-group">
                 <label> Confirm Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+                <input class="form-control" type="password" id="conpassword2" placeholder="Confirm your password" />
             </div>
 
-            <button type="submit" class="btn btn-success">Submit form</button>
+            <input id="guard" onClick="GuardAjax();" type="button" name="Submit Register Form" value="Submit Register Form" class="btn btn-success">
         </fieldset>
     </form>
 </div>
 
 <div class="user bg-light col-xs-6 col-lg-6 col-md-6 col-sm-6 col-center-block" style="display: none;">
 
-    <form method="post" action =" ">
+    <form>
         <fieldset>
             <legend align="center" class="text-primary">Sign up for User</legend>
 
             <div class="form-group">
-                <label> First Name: </label>
-                <input class="form-control" type="text" name="First Name" placeholder="Enter Your First Name" />
+                <label> Full Name: </label>
+                <input class="form-control" id="uname" type="text" name="Full Name" placeholder="Enter Your Full Name" />
             </div>
-            <div class="form-group">
-                <label> Last Name: </label>
-                <input class="form-control" type="text" name="Last Name" placeholder="Enter Your Last Name" />
-            </div>
+
             <div class="form-group">
                 <label> Passport No: </label>
                 <input class="form-control" type="text" name="Passport" placeholder="Enter Your Passport No" />
             </div>
             <div class="form-group">
                 <label>Email address: </label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" class="form-control" id="exampleInputEmail3" aria-describedby="emailHelp" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label> Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Enter Your Password" />
+                <input class="form-control" type="password" id="password3" name="password3" placeholder="Enter Your Password" />
             </div>
             <div class="form-group">
                 <label> Confirm Password: </label>
-                <input class="form-control" type="password" name="Last Name" placeholder="Confirm your password" />
+                <input class="form-control" type="password" id="conpassword3" placeholder="Confirm your password" />
             </div>
 
-            <button type="submit" class="btn btn-success">Submit form</button>
+            <input id="user" onClick="UserAjax();"type="button" name="Submit Register Form" value="Submit Register Form" class="btn btn-success">
         </fieldset>
     </form>
 </div>
