@@ -26,7 +26,7 @@
                 url: "/Login/userLogin",
                 data: { "userName": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
                 success: function (data) {
-                    alert("success");
+                    alert(data);
                 },
                 error: function (xhr, ts, et) {
                     alert("Error");
@@ -79,7 +79,7 @@
                 <label class="form-check-label" for="exampleCheck1">User Login </label>
             </div>
 
-            <input id="login" onClick="FormAjax();" type="button" value="submit" class="btn btn-success"> Login </input>
+            <input id="login" onClick="FormAjax();" type="button" value="submit" class="btn btn-success">
 
         </fieldset>
     </form>
