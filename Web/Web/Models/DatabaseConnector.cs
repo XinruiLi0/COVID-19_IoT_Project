@@ -20,7 +20,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, from AccountLogin where userName = '{userName}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName from AccountLogin where userName = '{userName}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
