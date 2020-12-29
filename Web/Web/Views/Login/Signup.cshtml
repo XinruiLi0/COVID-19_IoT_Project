@@ -51,7 +51,7 @@
             type: "POST",
             dataType: "text",
             url: "/Login/userRegister",
-            data: {"userName": $("#dname").val(), "userEmail": $("#exampleInputEmail1").val(), "userPassword": $("#password1").val(), "userRole": 1 },
+            data: {"userName": $("#dname").val(), "userEmail": $("#exampleInputEmail1").val(), "userPassword": $("#password1").val(), "userRole": 3 },
             success: function (data) {
                 alert(data);
                 window.location.href = '@Url.Action("Signup", "Login")';
@@ -102,7 +102,7 @@
             type: "POST",
             dataType: "text",
             url: "/Login/userRegister",
-            data: {"userName": $("#uname").val(), "userEmail": $("#exampleInputEmail3").val(), "userPassword": $("#password3").val(), "userRole": 3 },
+            data: {"userName": $("#uname").val(), "userEmail": $("#exampleInputEmail3").val(), "userPassword": $("#password3").val(), "userRole": 1 },
             success: function (data) {
                alert(data);
                window.location.href = '@Url.Action("Signup", "Login")';
