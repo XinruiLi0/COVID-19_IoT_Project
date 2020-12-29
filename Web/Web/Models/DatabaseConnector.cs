@@ -13,8 +13,65 @@ namespace Web.Models
 
         public static Dictionary<string,string> userRegister(string userName, string userPassword, int userRole)
         {
-            
-            
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, from AccountLogin where userName = '{userName}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var result = DataTableToDictionary(ds.Tables[0]);
+            if (userName == null)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Unknow email."}
+                };
+            }
+            else if (result.Count > 0)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account already exist."}
+                };
+            }
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserPassword, UserRole) values ('{userName}', '{userPassword}', '{userRole}');", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
             return new Dictionary<string, string>
             {
                 {"result","success"}, {"message", "Success."}
@@ -43,9 +100,8 @@ namespace Web.Models
                         connection.Close();
                 }
             }
-                
-
-            // Do something with data set
+            
+            // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
             if (userName == null || result.Count == 0)
