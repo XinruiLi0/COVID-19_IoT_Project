@@ -20,7 +20,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail, from AccountLogin where userName = '{userEmail}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{userEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -35,7 +35,7 @@ namespace Web.Models
             }
 
             var result = DataTableToDictionary(ds.Tables[0]);
-            if (userName == null)
+            if (userEmail == null)
             {
                 return new Dictionary<string, string>
                 {
