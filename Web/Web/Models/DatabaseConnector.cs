@@ -11,7 +11,7 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
-        public static Dictionary<string,string> userRegister(string userName, string userPassword, int userRole)
+        public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -20,7 +20,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName from AccountLogin where userName = '{userName}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail, from AccountLogin where userName = '{userEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -55,7 +55,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserPassword, UserRole) values ('{userName}', '{userPassword}', '{userRole}');", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}');", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -78,7 +78,7 @@ namespace Web.Models
             };
         }
 
-        public static Dictionary<string, string> userLogin(string userName, string userPassword, int userRole)
+        public static Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -87,7 +87,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserPassword, UserRole from AccountLogin where userName = '{userName}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserPassword, UserRole from AccountLogin where userName = '{userEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -104,7 +104,7 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            if (userName == null || result.Count == 0)
+            if (userEmail == null || result.Count == 0)
             {
                 return new Dictionary<string, string>
                 {
@@ -129,7 +129,7 @@ namespace Web.Models
             {
                 return new Dictionary<string, string>
                 {
-                    {"result","success"}, {"message", "Success."}
+                    {"result","success"}, {"message", $"'{result[0]["UserName"]}'"}
                 };
             }
         }
