@@ -22,7 +22,7 @@ namespace Web.Models
                     connection.Open();
                     SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{userEmail}'", connection);
                     adp.Fill(ds);
-                }d
+                }
                 catch (Exception e)
                 {
 
