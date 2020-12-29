@@ -29,5 +29,17 @@ namespace Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        [HttpPost]
+        public Dictionary<string, string> checkVisitorStatus(string userEmail, int userRole)
+        {
+            return DatabaseConnector.checkVisitorStatus(userEmail, userRole);
+        }
+
+        [HttpPost]
+        public Dictionary<string, string> UpdatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
+        {
+            return DatabaseConnector.UpdatePatientStatus(userEmail, userPassword, visitorID, status);
+        }
+
     }
 }
