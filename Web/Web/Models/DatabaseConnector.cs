@@ -35,6 +35,38 @@ namespace Web.Models
             return result;
         }
 
+        private static Dictionary<string, string> checkStatusByID(string visitorID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{visitorID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            // Convert table to dictionary
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+            return result[0];
+        }
+
         public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
@@ -164,8 +196,14 @@ namespace Web.Models
             }
         }
 
-        public static Dictionary<string, string> checkVisitorStatus(string userEmail, int userRole)
+        public static Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
         {
+            var check = userLogin(userEmail, userPassword, userRole);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -173,7 +211,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -231,37 +269,6 @@ namespace Web.Models
             return checkStatusByID(visitorID);
         }
 
-        private static Dictionary<string, string> checkStatusByID(string visitorID)
-        {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{visitorID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
-
-            return result[0];
-        }
 
         public static Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
         {
