@@ -19,15 +19,15 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> userLogin(string userName, string userPassword, int userRole)
+        public Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
-            return DatabaseConnector.userLogin(userName, userPassword, userRole);
+            return DatabaseConnector.userLogin(userEmail, userPassword, userRole);
         }
 
         [HttpPost]
-        public Dictionary<string, string> userRegister(string userName, string userPassword, int userRole)
+        public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
-            return DatabaseConnector.userRegister(userName, userPassword, userRole);
+            return DatabaseConnector.userRegister(userName, userEmail, userPassword, userRole);
         }
     }
 }

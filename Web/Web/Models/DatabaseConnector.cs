@@ -11,7 +11,31 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
-        public static Dictionary<string,string> userRegister(string userName, string userPassword, int userRole)
+        public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
+        {
+            Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
+            if (dataTable != null)
+            {
+                int rowNum = 0;
+                foreach (DataRow dataRow in dataTable.Rows)
+                {
+                    var rowDetail = new Dictionary<string, string>();
+                    foreach (DataColumn dataColumn in dataTable.Columns)
+                    {
+                        rowDetail.Add(dataColumn.ColumnName, dataRow[dataColumn].ToString());
+                    }
+                    result.Add(rowNum, rowDetail);
+                    rowNum++;
+                }
+            }
+            else
+            {
+                result = null;
+            }
+            return result;
+        }
+
+        public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -20,12 +44,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, from AccountLogin where userName = '{userName}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{userEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
                 finally
                 {
@@ -35,7 +62,7 @@ namespace Web.Models
             }
 
             var result = DataTableToDictionary(ds.Tables[0]);
-            if (userName == null)
+            if (userEmail == null)
             {
                 return new Dictionary<string, string>
                 {
@@ -55,7 +82,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserPassword, UserRole) values ('{userName}', '{userPassword}', '{userRole}');", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}');", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -78,7 +105,7 @@ namespace Web.Models
             };
         }
 
-        public static Dictionary<string, string> userLogin(string userName, string userPassword, int userRole)
+        public static Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -87,12 +114,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserPassword, UserRole from AccountLogin where userName = '{userName}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserPassword, UserRole from AccountLogin where UserEmail = '{userEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
                 finally
                 {
@@ -104,7 +134,7 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            if (userName == null || result.Count == 0)
+            if (userEmail == null || result.Count == 0)
             {
                 return new Dictionary<string, string>
                 {
@@ -129,33 +159,109 @@ namespace Web.Models
             {
                 return new Dictionary<string, string>
                 {
-                    {"result","success"}, {"message", "Success."}
+                    {"result","success"}, {"message", $"{result[0]["UserName"]}"}
                 };
             }
         }
 
-        public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
+        public static Dictionary<string, string> checkVisitorStatus(string userEmail, int userRole)
         {
-            Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
-            if (dataTable != null)
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
             {
-                int rowNum = 0;
-                foreach (DataRow dataRow in dataTable.Rows)
+                try
                 {
-                    var rowDetail = new Dictionary<string, string>();
-                    foreach (DataColumn dataColumn in dataTable.Columns)
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
                     {
-                        rowDetail.Add(dataColumn.ColumnName, dataRow[dataColumn].ToString());
-                    }
-                    result.Add(rowNum, rowDetail);
-                    rowNum++;
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
                 }
             }
-            else
-            {
-                result = null;
-            }
-            return result;
+
+            // Convert table to dictionary
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+            return result[0];
         }
+
+        public static Dictionary<string, string> UpdatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
+        {
+            var check = userLogin(userEmail, userPassword, 3);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} WHERE ID = {visitorID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return checkStatusByID(visitorID);
+        }
+
+        private static Dictionary<string, string> checkStatusByID(string visitorID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{visitorID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            // Convert table to dictionary
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+            return result[0];
+        }
+
     }
 }
