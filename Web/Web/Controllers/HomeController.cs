@@ -36,10 +36,15 @@ namespace Web.Controllers
         }
         
         [HttpPost]
-        public Dictionary<string, string> UpdatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
+        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
         {
-            return DatabaseConnector.UpdatePatientStatus(userEmail, userPassword, visitorID, status);
+            return DatabaseConnector.updatePatientStatus(userEmail, userPassword, visitorID, status);
         }
 
+        [HttpPost]
+        public Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
+        {
+            return DatabaseConnector.checkUserStatus(userEmail, userPassword);
+        }
     }
 }
