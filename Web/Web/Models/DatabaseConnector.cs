@@ -11,6 +11,11 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
+        /// <summary>
+        /// Convert Datatable to Dictionary
+        /// </summary>
+        /// <param name="dataTable">Datatable</param>
+        /// <returns>Dictionary</returns>
         public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
         {
             Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
@@ -35,7 +40,12 @@ namespace Web.Models
             return result;
         }
 
-        private static Dictionary<string, string> checkStatusByID(string visitorID)
+        /// <summary>
+        /// Private method for checking user info by ID directory.
+        /// </summary>
+        /// <param name="ID">User ID</param>
+        /// <returns>A dictionary contains user info.</returns>
+        private static Dictionary<string, string> checkStatusByID(string ID)
         {
             DataSet ds = new DataSet();
 
@@ -44,7 +54,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{visitorID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{ID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -67,6 +77,14 @@ namespace Web.Models
             return result[0];
         }
 
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="userName">User name</param>
+        /// <param name="userEmail">User email</param>
+        /// <param name="userPassword">User password</param>
+        /// <param name="userRole">User role</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
         public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
@@ -137,6 +155,13 @@ namespace Web.Models
             };
         }
 
+        /// <summary>
+        /// Check user login.
+        /// </summary>
+        /// <param name="userEmail">User email</param>
+        /// <param name="userPassword">User password</param>
+        /// <param name="userRole">User role</param>
+        /// <returns>If success, return a dictionary contains user name, return error message otherwise.</returns>
         public static Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
@@ -196,6 +221,14 @@ namespace Web.Models
             }
         }
 
+        /// <summary>
+        /// Check visitor's health status for third-party (guard and doctor).
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <param name="userRole">Current user role</param>
+        /// <param name="visitorEmail">Visitor Email</param>
+        /// <returns>A dictionary contains health status.</returns>
         public static Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
         {
             var check = userLogin(userEmail, userPassword, userRole);
@@ -234,6 +267,14 @@ namespace Web.Models
             return result[0];
         }
 
+        /// <summary>
+        /// Update visitor's health status.
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <param name="visitorID">Visitor id</param>
+        /// <param name="status">Health status</param>
+        /// <returns>A dictionary contains updated health status.<</returns>
         public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
         {
             var check = userLogin(userEmail, userPassword, 3);
@@ -269,7 +310,12 @@ namespace Web.Models
             return checkStatusByID(visitorID);
         }
 
-
+        /// <summary>
+        /// Self-checking user's health status.
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <returns>A dictionary contains health status.</returns>
         public static Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
         {
             DataSet ds = new DataSet();
