@@ -19,19 +19,59 @@
                 alert("Your role is not defined yet. Please choose your role!");
                 return;
             }
-
-            $.ajax({
-                type: "POST",
-                dataType: "text",
-                url: "/Login/userLogin",
-                data: { "userEmail": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
-                success: function (data) {
-                    alert(data);
-                },
-                error: function (xhr, ts, et) {
-                    alert("Error");
-                }
-            })
+            else if (rolenum == 3) {
+             
+                $.ajax({
+                    type: "POST",
+                    dataType: "text",
+                    url: "/Login/userLogin",
+                    data: { "userEmail": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
+                    success: function (data) {
+                        var res = eval("(" + data + ")");
+                        if (res.result == "success") {
+                            Session["userEmail"] = $("#email").val();
+                            Session["userPassword"] = $("#password").val();
+                            Session["userRole"] = rolenum;
+                            window.location.href = '@Url.Action("Doctor", "Home")';
+                        }
+                        else {
+                            alert(res.message);
+                            window.location.href = '@Url.Action("Login", "Login")';
+                        }
+                    },
+                    error: function (xhr, ts, et) {
+                        alert("Error");
+                    }
+                })
+            }
+            else if (rolenum == 2) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "text",
+                    url: "/Login/userLogin",
+                    data: { "userEmail": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
+                    success: function (data) {
+                        window.location.href = '@Url.Action("Doctor", "Home")';
+                    },
+                    error: function (xhr, ts, et) {
+                        alert("Error");
+                    }
+                })
+            }
+            else if (rolenum == 1) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "text",
+                    url: "/Login/userLogin",
+                    data: { "userEmail": $("#email").val(), "userPassword": $("#password").val(), "userRole": rolenum },
+                    success: function (data) {
+                        window.location.href = '@Url.Action("Doctor", "Home")';
+                    },
+                    error: function (xhr, ts, et) {
+                        alert("Error");
+                    }
+                })
+            }
         };
 
         function getRole() {
