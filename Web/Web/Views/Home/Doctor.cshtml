@@ -4,9 +4,56 @@
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
-    function SearchAjax() {
-        var txt = 
-    };
+
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) {
+                    c_end = document.cookie.length;
+                }
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    }
+
+    window.onload = function () {
+        var userName = getCookie("username");
+        $("#getUserName").html(userName);
+    }
+
+    $(document).ready(function () {
+        $('#searchBtn').click(function () {
+            var txt = $('#searchBox').val();
+            var userEmail = getCookie("userEmail");
+            var userPassword = getCookie("userPassword");
+            var userRole = getCookie("userRole");
+            if (txt != '') {
+                $.ajax({
+                    type: "POST",
+                    dataType: "text",
+                    url: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkVisitorStatus",
+                    data: { "userEmail": userEmail, "userPassword": userPassword, "userRole": userRole, "vistorEmail": txt },
+                    success: function (data) {
+                        $('#result').html(data);
+                    }
+                });
+            }
+            else {
+                $('#result').html('');
+            }
+        });
+    });
+
+
+
+
+
+
+
 </script>
 
 <div class="page-content page-container" id="page-content">
@@ -33,7 +80,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <th class="UserName">aaa</th>
+                                                <th id="getUserName"></th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -51,8 +98,8 @@
 <div class="PatientSearching">
     <p class="SearchingHint">Please input the name of the patient:</p>
     <form class="searching" >
-        <input id="searchBox" type="text" placeholder="Search.." name="search">
-        <button id="searchBtn" onclick="SearchAjax();" type="submit"><i class="fa fa-search"></i>Search</button>
+        <input id="searchBox" type="text" placeholder="Search.." name="searchBox">
+        <button id="searchBtn" onclick="SearchAjax();" type="submit"><i class="fa fa-search" name ="searchBtn"></i>Search</button>
     </form>
     <div id="result">
 

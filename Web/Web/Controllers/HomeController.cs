@@ -23,6 +23,11 @@ namespace Web.Controllers
             return View();
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -30,9 +35,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> checkVisitorStatus(string visitorEmail, int userRole)
+        public Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
         {
-            return DatabaseConnector.checkVisitorStatus(visitorEmail, userRole);
+            return DatabaseConnector.checkVisitorStatus(userEmail, userPassword, userRole, visitorEmail);
         }
         
         [HttpPost]

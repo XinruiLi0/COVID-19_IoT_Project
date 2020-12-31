@@ -1,0 +1,102 @@
+Note: All unauthorized request and error will return in following format:
+{
+	"result": "error",
+	"message": "Detail for this error."
+}
+
+User Register:
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
+	Content-Type: application/json
+	body(submit data): userName, userEmail, userPassword, userRole
+		example:
+		{
+			"userName": "a"
+			"userEmail": "b", 
+			"userPassword": "c", 
+			"userRole": 1
+		}
+	return data:
+		example:
+		{
+			"result":"success", 
+			"message": "Success."
+		}
+
+User Login:
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
+	Content-Type: application/json
+	body(submit data): 
+		example:
+		{
+			"userEmail": "a", 
+			"userPassword": "b",
+			"userRole": 1
+		}
+	return data:
+		example:
+		{
+			"result":"success", 
+			"message": "User Name"
+		}
+
+User self-check:
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
+	Content-Type: application/json
+	body(submit data): 
+		example:
+		{
+			"userEmail": "a", 
+			"userPassword": "b"
+		}
+	return data:
+		example:
+		{
+			"UserName": "c", 
+			"UserStatus": 0
+		}
+
+Third-party vistor(patient) check:
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkVisitorStatus
+	Content-Type: application/json
+	body(submit data): userEmail, userPassword, userRole, visitorEmail
+		example:
+		{
+			"userEmail": "a",
+			"userPassword": "b",
+			"userRole": 2,
+			"visitorEmail": "c"
+		}
+	return data:
+		example:
+		{
+			"ID": 0,  // for doctor only
+			"UserName": "d",
+			"UserEmail": "c",  // for doctor only
+			"UserStatus": 0
+		}
+
+Doctor update:
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/updatePatientStatus
+	Content-Type: application/json
+	body(submit data): userEmail, userPassword, visitorID, status
+		example:
+		{
+			"userEmail": "a",
+			"userPassword": "b",
+			"visitorID": 0,
+			"status": 0
+		}
+	return data:
+		example:
+		{
+			"ID": 0,
+			"UserName": "c",
+			"UserEmail": "d",
+			"UserStatus": 0
+		}
+

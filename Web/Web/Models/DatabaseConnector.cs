@@ -11,6 +11,11 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
+        /// <summary>
+        /// Convert Datatable to Dictionary
+        /// </summary>
+        /// <param name="dataTable">Datatable</param>
+        /// <returns>Dictionary</returns>
         public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
         {
             Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
@@ -35,6 +40,51 @@ namespace Web.Models
             return result;
         }
 
+        /// <summary>
+        /// Private method for checking user info by ID directory.
+        /// </summary>
+        /// <param name="ID">User ID</param>
+        /// <returns>A dictionary contains user info.</returns>
+        private static Dictionary<string, string> checkStatusByID(string ID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{ID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            // Convert table to dictionary
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+            return result[0];
+        }
+
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="userName">User name</param>
+        /// <param name="userEmail">User email</param>
+        /// <param name="userPassword">User password</param>
+        /// <param name="userRole">User role</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
         public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
@@ -105,6 +155,13 @@ namespace Web.Models
             };
         }
 
+        /// <summary>
+        /// Check user login.
+        /// </summary>
+        /// <param name="userEmail">User email</param>
+        /// <param name="userPassword">User password</param>
+        /// <param name="userRole">User role</param>
+        /// <returns>If success, return a dictionary contains user name, return error message otherwise.</returns>
         public static Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
@@ -164,8 +221,22 @@ namespace Web.Models
             }
         }
 
-        public static Dictionary<string, string> checkVisitorStatus(string userEmail, int userRole)
+        /// <summary>
+        /// Check visitor's health status for third-party (guard and doctor).
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <param name="userRole">Current user role</param>
+        /// <param name="visitorEmail">Visitor Email</param>
+        /// <returns>A dictionary contains health status.</returns>
+        public static Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
         {
+            var check = userLogin(userEmail, userPassword, userRole);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -173,7 +244,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -196,6 +267,14 @@ namespace Web.Models
             return result[0];
         }
 
+        /// <summary>
+        /// Update visitor's health status.
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <param name="visitorID">Visitor id</param>
+        /// <param name="status">Health status</param>
+        /// <returns>A dictionary contains updated health status.<</returns>
         public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
         {
             var check = userLogin(userEmail, userPassword, 3);
@@ -231,38 +310,12 @@ namespace Web.Models
             return checkStatusByID(visitorID);
         }
 
-        private static Dictionary<string, string> checkStatusByID(string visitorID)
-        {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{visitorID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
-
-            return result[0];
-        }
-
+        /// <summary>
+        /// Self-checking user's health status.
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <returns>A dictionary contains health status.</returns>
         public static Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
         {
             DataSet ds = new DataSet();
