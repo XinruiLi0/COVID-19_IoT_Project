@@ -4,7 +4,7 @@ Note: All unauthorized request and error will return in following format:
 	"message": "Detail for this error."
 }
 
-User Register:
+User Register: (Privide the register server to user, guard, and doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 	Content-Type: application/json
@@ -23,7 +23,7 @@ User Register:
 			"message": "Success."
 		}
 
-User Login:
+User Login: (Provide login to user, guard, and doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 	Content-Type: application/json
@@ -41,7 +41,7 @@ User Login:
 			"message": "User Name"
 		}
 
-User self-check:
+User self-check: (Provide self-check server to user only)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
 	Content-Type: application/json
@@ -58,7 +58,7 @@ User self-check:
 			"UserStatus": 0
 		}
 
-Third-party vistor(patient) check:
+Third-party vistor(patient) check: (Provide health check server to guard and doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkVisitorStatus
 	Content-Type: application/json
@@ -79,7 +79,7 @@ Third-party vistor(patient) check:
 			"UserStatus": 0
 		}
 
-Doctor update:
+Doctor update: (Provide health update server to doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/updatePatientStatus
 	Content-Type: application/json
@@ -100,3 +100,20 @@ Doctor update:
 			"UserStatus": 0
 		}
 
+Abnormal visitor body temporture alert: (Provide alert server to guard)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/abnormalBodyTrmperatureAlert
+	Content-Type: application/json
+	body(submit data): userEmail, userPassword, visitorEmail
+		example:
+		{
+			"userEmail": "a",
+			"userPassword": "b",
+			"visitorEmail": "c"
+		}
+	return data:
+		example:
+		{
+			"result": "success",
+			"message": "Alert recived."
+		}

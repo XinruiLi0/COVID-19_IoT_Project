@@ -74,7 +74,10 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0];
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Visitor account not exist."}
+                };
         }
 
         /// <summary>
@@ -264,7 +267,10 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0];
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Visitor account not exist."}
+                };
         }
 
         /// <summary>
@@ -277,6 +283,7 @@ namespace Web.Models
         /// <returns>A dictionary contains updated health status.<</returns>
         public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
         {
+            // Check permission
             var check = userLogin(userEmail, userPassword, 3);
             if (!check["result"].Equals("success"))
             {
@@ -345,7 +352,33 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0]; 
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "User health status not exist."}
+                };
+        }
+
+        /// <summary>
+        /// Raise an alert to prodiction subsystem for abnormal visitor's body temperature.
+        /// </summary>
+        /// <param name="userEmail">Current user email</param>
+        /// <param name="userPassword">Current user password</param>
+        /// <param name="visitorEmail">Visitor Email</param>
+        /// <returns>Return success message in default.</returns>
+        public static Dictionary<string, string> abnormalBodyTrmperatureAlert(string userEmail, string userPassword, string visitorEmail)
+        {
+            // Check permission
+            var check = userLogin(userEmail, userPassword, 2);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            // More detail need to be added.
+            return new Dictionary<string, string>
+            {
+                {"result","success"}, {"message", "Alert received."}
+            };
         }
     }
 }
