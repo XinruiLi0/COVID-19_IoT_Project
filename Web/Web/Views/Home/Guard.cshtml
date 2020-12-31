@@ -1,0 +1,57 @@
+﻿@page
+@model Web.Views.Home.GuardModel
+@{
+}
+
+<script type="text/javascript">
+
+    window.onload = function () {
+        var userem = getCookie("userEmail");
+        var userpass = getCookie("userPassword");
+        var userrol = getCookie("userRole");
+        var username = getCookie("username");
+        $("#wel").html("Welcome the Guard User: " + userem);
+        $("#thx").html("Dear " + username+ " Thank you for your effort to keep everynody healthy!")
+
+    }
+
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) {
+                    c_end = document.cookie.length;
+                }
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    }
+
+</script>
+
+<div>
+    <h3 id="wel"> </h3>
+    <h5 id="thx"> </h5>
+    <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
+        <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
+    </div>
+    <p class="bg-danger text-white">
+        If visitor's status is dangerous, please forbid him/her to enter the building!
+    </p>
+    <p class="bg-info">
+        Use the search bar below to search a visitor's health status!
+    </p>
+    
+    <div class="Visitor">
+        <form>
+            <label class="form-check-label" for="exampleCheck1">Please input the email of a visitor: </label>
+            <input type="text" placeholder="Input email here..." name="search">
+            <br>
+            <input id="searching" onClick="FormAjax();" type="button" value="Submit" class="btn btn-success">
+        </form>
+    </div>
+
+</div>
