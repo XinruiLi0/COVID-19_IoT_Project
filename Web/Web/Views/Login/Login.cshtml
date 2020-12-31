@@ -21,7 +21,6 @@
                 return;
             }
             else if (rolenum == 3) {
-
                 $.ajax({
                     type: "POST",
                     dataType: "text",
@@ -33,6 +32,7 @@
                             createCookie("userEmail", $("#email").val(),1);
                             createCookie("userPassword", $("#password").val(),1);
                             createCookie("userRole", 3, 1);
+                            createCookie("username", res.message, 1);
                             window.location.href = '@Url.Action("Doctor", "Home")';
                         }
                         else {
@@ -57,6 +57,7 @@
                             createCookie("userEmail", $("#email").val(),1);
                             createCookie("userPassword", $("#password").val(),1);
                             createCookie("userRole", 2, 1);
+                            createCookie("username", res.message, 1);
                             window.location.href = '@Url.Action("Guard", "Home")';
                         }
                         else {
@@ -155,7 +156,7 @@
                 <label class="form-check-label" for="exampleCheck1">User Login </label>
             </div>
 
-            <input id="login" onClick="FormAjax();" type="button" value="submit" class="btn btn-success">
+            <input id="login" onClick="FormAjax();" type="button" value="Submit" class="btn btn-success">
 
         </fieldset>
     </form>
