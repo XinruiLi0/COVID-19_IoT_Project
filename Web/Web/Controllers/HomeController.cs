@@ -56,5 +56,11 @@ namespace Web.Controllers
         {
             return DatabaseConnector.checkUserStatus(userEmail, userPassword);
         }
+
+        [HttpPost]
+        public Dictionary<string, string> abnormalBodyTrmperatureAlert(string userEmail, string userPassword, string visitorEmail)
+        {
+            return DatabaseConnector.abnormalBodyTrmperatureAlert(userEmail, userPassword, visitorEmail);
+        }
     }
 }
