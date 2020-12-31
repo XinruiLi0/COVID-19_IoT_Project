@@ -100,7 +100,7 @@ Doctor update: (Provide health update server to doctor)
 			"UserStatus": 0
 		}
 
-Abnormal visitor body temporture alert: (Provide health update server to doctor)
+Abnormal visitor body temporture alert: (Provide alert server to guard)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/abnormalBodyTrmperatureAlert
 	Content-Type: application/json
