@@ -74,7 +74,10 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0];
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Visitor account not exist."}
+                };
         }
 
         /// <summary>
@@ -264,7 +267,10 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0];
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Visitor account not exist."}
+                };
         }
 
         /// <summary>
@@ -346,7 +352,10 @@ namespace Web.Models
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
-            return result[0]; 
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "User health status not exist."}
+                };
         }
 
         /// <summary>
