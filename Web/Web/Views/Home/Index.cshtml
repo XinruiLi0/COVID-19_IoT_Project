@@ -4,11 +4,17 @@
 
 <div class="text-center">
     <h2 class="display-4">Welcome to @ViewData["Title"]</h2>
-    
+
     <h3>Safe Others, Wear a mask.</h3>
 
-    <img src="https://www.fda.gov/files/styles/main_image_1/public/how-you-can-make-a-difference-1600x900.gif?itok=UjeaXLkt" alt ="some actions">
+    <div>
+          <input class="btn btn-success btn-lg" type="button" value="Login"  onclick="location.href='@Url.Action("Login", "Login")'"/>
+  
+          <input class="btn btn-info btn-lg"  type="button" value="Sign Up" onclick="location.href='@Url.Action("Signup", "Login")'" />
+    </div>
+
+    <img src="https://www.fda.gov/files/styles/main_image_1/public/how-you-can-make-a-difference-1600x900.gif?itok=UjeaXLkt" alt="some actions">
 
 
-   
+
 </div>

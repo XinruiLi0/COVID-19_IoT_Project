@@ -82,6 +82,7 @@
                             createCookie("userEmail", $("#email").val(),1);
                             createCookie("userPassword", $("#password").val(),1);
                             createCookie("userRole", 1, 1);
+                            createCookie("username", res.message, 1);
                             window.location.href = '@Url.Action("User", "Home")';
                         }
                         else {

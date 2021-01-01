@@ -7,12 +7,34 @@
 
     window.onload = function () {
         var userem = getCookie("userEmail");
-        var userpass = getCookie("userPassword");
-        var userrol = getCookie("userRole");
         var username = getCookie("username");
         $("#wel").html("Welcome the Guard User: " + userem);
         $("#thx").html("Dear " + username+ " Thank you for your effort to keep everynody healthy!")
 
+    }
+
+    function FormAjax() {
+        var userem = getCookie("userEmail");
+        var userpass = getCookie("userPassword");
+        var userrol = getCookie("userRole");
+        var vem = $("#email").val();
+
+        if ($("#email").val() == "") {
+            alert("You leave email empty. Please fill in the blank to search!");
+            return;
+        }
+        $.ajax({
+                type: "POST",
+                dataType: "text",
+                url: "/Home/checkVisitorStatus",
+                data: {"userEmail": userem, "userPassword": userpass, "userRole": userrol, "visitorEmail": vem},
+                success: function (data) {              
+                    alert(data);
+                },
+                error: function (xhr, ts, et) {
+                    alert("Error");
+                }
+            })
     }
 
     function getCookie(c_name) {
@@ -33,25 +55,34 @@
 </script>
 
 <div>
-    <h3 id="wel"> </h3>
+    <h1 id="wel"> </h1>
     <h5 id="thx"> </h5>
     <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
         <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
     </div>
-    <p class="bg-danger text-white">
-        If visitor's status is dangerous, please forbid him/her to enter the building!
+    <p class="bg-danger lead text-light">
+        If a visitor's status shown is in dangerous(which means status number is close to 1.0), please forbid him/her to enter the public place!
     </p>
-    <p class="bg-info">
-        Use the search bar below to search a visitor's health status!
+    <p class="bg-info lead text-light">
+        Use the search bar below to search a visitor's health status, input visitor's email and see the results!
     </p>
-    
+
     <div class="Visitor">
         <form>
-            <label class="form-check-label" for="exampleCheck1">Please input the email of a visitor: </label>
-            <input type="text" placeholder="Input email here..." name="search">
+            <label class="form-check-label lead" for="exampleCheck1">Please input the email of a visitor: </label>
+            <input id="email" type="text" size="35" placeholder="Please input visitor's email here......" name="search">
             <br>
-            <input id="searching" onClick="FormAjax();" type="button" value="Submit" class="btn btn-success">
+            <input class="btn btn-primary" id="searching" onClick="FormAjax();" type="button" value="Submit">
         </form>
     </div>
-
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="location.href='@Url.Action("Login", "Login")'" />
 </div>
