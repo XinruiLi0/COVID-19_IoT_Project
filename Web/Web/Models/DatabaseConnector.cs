@@ -54,7 +54,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = '{ID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {ID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -78,6 +78,67 @@ namespace Web.Models
                 {
                     {"result","error"}, {"message", "Visitor account not exist."}
                 };
+        }
+
+        private static Dictionary<int, Dictionary<string, string>> getGuardDevices(int ID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID from GuardDevices where ID = {ID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+
+                    return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return DataTableToDictionary(ds.Tables[0]);
+        }
+
+        private static int getUserID(string userEmail)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select ID from AccountLogin where UserEmail = '{userEmail}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return 0;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var result = DataTableToDictionary(ds.Tables[0]);
+            return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
         }
 
         /// <summary>
@@ -379,6 +440,193 @@ namespace Web.Models
             {
                 {"result","success"}, {"message", "Alert received."}
             };
+        }
+
+
+        public static Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword)
+        {
+            // Check permission
+            var check = userLogin(userEmail, userPassword, 2);
+            if (!check["result"].Equals("success"))
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, check}
+                };
+            }
+
+            // Get User ID
+            var id = getUserID(userEmail);
+            if (id == 0)
+            {
+                var temp = new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account not exist."}
+                };
+
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, temp}
+                };
+            }
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID) value ({id}); ", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+
+                    return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    }; 
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return getGuardDevices(id);
+        }
+
+
+        public static Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, int deviceID)
+        {
+            // Check permission
+            var check = userLogin(userEmail, userPassword, 2);
+            if (!check["result"].Equals("success"))
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, check}
+                };
+            }
+
+            // Get User ID
+            var id = getUserID(userEmail);
+            if (id == 0)
+            {
+                var temp = new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account not exist."}
+                };
+
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, temp}
+                };
+            }
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"delete from GuardDevices where ID = {id} and DeviceID = {deviceID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+
+                    return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return getGuardDevices(id);
+        }
+
+        public static Dictionary<string, string> guardDeviceChecking(int deviceID, string visitorEmail, float temperature)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', VisitorTemperature = {temperature}, LastUpdated = GETDATE() where DeviceID = {deviceID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return new Dictionary<string, string>
+            {
+                {"result","success"}, {"message", "Success."}
+            };
+        }
+
+        public static Dictionary<string, string> guardChecking(int deviceID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select * from GuardDevices where DeviceID = {deviceID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            // Convert table to dictionary
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Device not registered."}
+                };
         }
     }
 }

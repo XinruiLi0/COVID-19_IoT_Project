@@ -62,5 +62,29 @@ namespace Web.Controllers
         {
             return DatabaseConnector.abnormalBodyTrmperatureAlert(userEmail, userPassword, visitorEmail);
         }
+
+        [HttpPost]
+        public Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword)
+        {
+            return DatabaseConnector.registerGuardDevice(userEmail, userPassword);
+        }
+
+        [HttpPost]
+        public Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, int deviceID)
+        {
+            return DatabaseConnector.deleteGuardDevice(userEmail, userPassword, deviceID);
+        }
+
+        [HttpPost]
+        public Dictionary<string, string> guardDeviceChecking(int deviceID, string visitorEmail, float temperature)
+        {
+            return DatabaseConnector.guardDeviceChecking(deviceID, visitorEmail, temperature);
+        }
+
+        [HttpPost]
+        public Dictionary<string, string> guardChecking(int deviceID)
+        {
+            return DatabaseConnector.guardChecking(deviceID);
+        }
     }
 }
