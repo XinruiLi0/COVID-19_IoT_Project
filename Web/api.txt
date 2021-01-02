@@ -58,45 +58,42 @@ User self-check: (Provide self-check server to user only)
 			"UserStatus": 0
 		}
 
-Third-party vistor(patient) check: (Provide health check server to guard and doctor)
+Patient status check: (Provide health check server to doctor)
 	type: post
-	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkVisitorStatus
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkPatientStatus
 	Content-Type: application/json
-	body(submit data): userEmail, userPassword, userRole, visitorEmail
+	body(submit data): userEmail, userPassword, visitorEmail
 		example:
 		{
 			"userEmail": "a",
 			"userPassword": "b",
-			"userRole": 2,
 			"visitorEmail": "c"
 		}
 	return data:
 		example:
 		{
-			"ID": 0,  // for doctor only
 			"UserName": "d",
-			"UserEmail": "c",  // for doctor only
+			"UserEmail": "c",
 			"UserStatus": 0
 		}
 
-Doctor update: (Provide health update server to doctor)
+Patient status update: (Provide health update server to doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/updatePatientStatus
 	Content-Type: application/json
-	body(submit data): userEmail, userPassword, visitorID, status
+	body(submit data): userEmail, userPassword, visitorEmail, status
 		example:
 		{
 			"userEmail": "a",
 			"userPassword": "b",
-			"visitorID": 0,
+			"visitorEmail": "c",
 			"status": 0
 		}
 	return data:
 		example:
 		{
-			"ID": 0,
-			"UserName": "c",
-			"UserEmail": "d",
+			"UserName": "d",
+			"UserEmail": "c",
 			"UserStatus": 0
 		}
 

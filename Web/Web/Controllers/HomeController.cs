@@ -40,15 +40,15 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
+        public Dictionary<string, string> checkPatientStatus(string userEmail, string userPassword, string visitorEmail)
         {
-            return DatabaseConnector.checkVisitorStatus(userEmail, userPassword, userRole, visitorEmail);
+            return DatabaseConnector.checkPatientStatus(userEmail, userPassword, visitorEmail);
         }
         
         [HttpPost]
-        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
+        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
         {
-            return DatabaseConnector.updatePatientStatus(userEmail, userPassword, visitorID, status);
+            return DatabaseConnector.updatePatientStatus(userEmail, userPassword, visitorEmail, status);
         }
 
         [HttpPost]

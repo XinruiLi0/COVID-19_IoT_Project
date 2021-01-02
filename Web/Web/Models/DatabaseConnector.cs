@@ -45,7 +45,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="ID">User ID</param>
         /// <returns>A dictionary contains user info.</returns>
-        private static Dictionary<string, string> checkStatusByID(string ID)
+        private static Dictionary<string, string> checkStatusByID(int ID)
         {
             DataSet ds = new DataSet();
 
@@ -54,7 +54,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {ID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {ID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -286,16 +286,15 @@ namespace Web.Models
         }
 
         /// <summary>
-        /// Check visitor's health status for third-party (guard and doctor).
+        /// Check visitor's health status for doctor.
         /// </summary>
         /// <param name="userEmail">Current user email</param>
         /// <param name="userPassword">Current user password</param>
-        /// <param name="userRole">Current user role</param>
         /// <param name="visitorEmail">Visitor Email</param>
         /// <returns>A dictionary contains health status.</returns>
-        public static Dictionary<string, string> checkVisitorStatus(string userEmail, string userPassword, int userRole, string visitorEmail)
+        public static Dictionary<string, string> checkPatientStatus(string userEmail, string userPassword, string visitorEmail)
         {
-            var check = userLogin(userEmail, userPassword, userRole);
+            var check = userLogin(userEmail, userPassword, 3);
             if (!check["result"].Equals("success"))
             {
                 return check;
@@ -308,7 +307,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter(userRole == 3 ? $"select AccountLogin.ID as ID, UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'" : $"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -339,16 +338,26 @@ namespace Web.Models
         /// </summary>
         /// <param name="userEmail">Current user email</param>
         /// <param name="userPassword">Current user password</param>
-        /// <param name="visitorID">Visitor id</param>
+        /// <param name="visitorEmail">Visitor email</param>
         /// <param name="status">Health status</param>
         /// <returns>A dictionary contains updated health status.<</returns>
-        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorID, float status)
+        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 3);
             if (!check["result"].Equals("success"))
             {
                 return check;
+            }
+
+            // Get User ID
+            var VisitorID = getUserID(visitorEmail);
+            if (VisitorID == 0)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account not exist."}
+                };
             }
 
             DataSet ds = new DataSet();
@@ -358,7 +367,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} WHERE ID = {visitorID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} WHERE ID = {VisitorID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -375,7 +384,7 @@ namespace Web.Models
                 }
             }
 
-            return checkStatusByID(visitorID);
+            return checkStatusByID(VisitorID);
         }
 
         /// <summary>
