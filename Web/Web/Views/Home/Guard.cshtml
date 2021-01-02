@@ -1,7 +1,6 @@
-﻿@page
-@model Web.Views.Home.GuardModel
-@{
-}
+﻿@*
+    ViewData["Title"] = "Guard";
+*@
 
 <script type="text/javascript">
 
@@ -9,7 +8,7 @@
         var userem = getCookie("userEmail");
         var username = getCookie("username");
         $("#wel").html("Welcome the Guard User: " + userem);
-        $("#thx").html("Dear " + username+ " Thank you for your effort to keep everynody healthy!")
+        $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
 
     }
 
@@ -24,17 +23,17 @@
             return;
         }
         $.ajax({
-                type: "POST",
-                dataType: "text",
-                url: "/Home/checkVisitorStatus",
-                data: {"userEmail": userem, "userPassword": userpass, "userRole": userrol, "visitorEmail": vem},
-                success: function (data) {              
-                    alert(data);
-                },
-                error: function (xhr, ts, et) {
-                    alert("Error");
-                }
-            })
+            type: "POST",
+            dataType: "text",
+            url: "/Home/checkVisitorStatus",
+            data: { "userEmail": userem, "userPassword": userpass, "userRole": userrol, "visitorEmail": vem },
+            success: function (data) {
+                alert(data);
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
     }
 
     function getCookie(c_name) {
