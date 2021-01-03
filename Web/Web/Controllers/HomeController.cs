@@ -63,28 +63,43 @@ namespace Web.Controllers
             return DatabaseConnector.abnormalBodyTrmperatureAlert(userEmail, userPassword, visitorEmail);
         }
 
+        // -----------------------------------
+
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword)
+        public Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
         {
-            return DatabaseConnector.registerGuardDevice(userEmail, userPassword);
+            return DatabaseConnector.getGuardDevices(userEmail, userPassword);
         }
 
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, int deviceID)
+        public Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword, string deviceID, string deviceDescription)
+        {
+            return DatabaseConnector.registerGuardDevice(userEmail, userPassword, deviceID, deviceDescription);
+        }
+
+        [HttpPost]
+        public Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, string deviceID)
         {
             return DatabaseConnector.deleteGuardDevice(userEmail, userPassword, deviceID);
         }
 
         [HttpPost]
-        public Dictionary<string, string> guardDeviceChecking(int deviceID, string visitorEmail, float temperature)
+        public Dictionary<string, string> visitorDetect(string deviceID, string visitorEmail)
         {
-            return DatabaseConnector.guardDeviceChecking(deviceID, visitorEmail, temperature);
+            return DatabaseConnector.visitorDetect(deviceID, visitorEmail);
         }
 
         [HttpPost]
-        public Dictionary<string, string> guardChecking(int deviceID)
+        public Dictionary<string, string> visitorTemperatureUpdate(string deviceID, float temperature)
         {
-            return DatabaseConnector.guardChecking(deviceID);
+            return DatabaseConnector.visitorTemperatureUpdate(deviceID, temperature);
         }
+
+        [HttpPost]
+        public Dictionary<string, string> visitorInfoCheck(string deviceID)
+        {
+            return DatabaseConnector.visitorInfoCheck(deviceID);
+        }
+
     }
 }
