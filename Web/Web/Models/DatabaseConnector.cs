@@ -428,33 +428,6 @@ namespace Web.Models
                 };
         }
 
-        /// <summary>
-        /// Raise an alert to prodiction subsystem for abnormal visitor's body temperature.
-        /// </summary>
-        /// <param name="userEmail">Current user email</param>
-        /// <param name="userPassword">Current user password</param>
-        /// <param name="visitorEmail">Visitor Email</param>
-        /// <returns>Return success message in default.</returns>
-        public static Dictionary<string, string> abnormalBodyTrmperatureAlert(string userEmail, string userPassword, string visitorEmail)
-        {
-            // Check permission
-            var check = userLogin(userEmail, userPassword, 2);
-            if (!check["result"].Equals("success"))
-            {
-                return check;
-            }
-
-            // More detail need to be added.
-            return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Alert received."}
-            };
-        }
-
-
-
-        // ------------------------------------------------
-
         public static Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
         {
             // Check permission

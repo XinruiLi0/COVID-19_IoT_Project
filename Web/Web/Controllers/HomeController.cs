@@ -58,14 +58,6 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> abnormalBodyTrmperatureAlert(string userEmail, string userPassword, string visitorEmail)
-        {
-            return DatabaseConnector.abnormalBodyTrmperatureAlert(userEmail, userPassword, visitorEmail);
-        }
-
-        // -----------------------------------
-
-        [HttpPost]
         public Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
         {
             return DatabaseConnector.getGuardDevices(userEmail, userPassword);
