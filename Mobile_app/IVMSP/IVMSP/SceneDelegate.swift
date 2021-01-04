@@ -18,14 +18,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         
-        var Loggedin:Bool = true
+        var Loggedin:Bool = true   // assume user is logged in
         
         if let windowScene = scene as? UIWindowScene{
         let window = UIWindow(windowScene: windowScene)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let LoginVC = storyboard.instantiateViewController(withIdentifier: "Login") as! LoginVC
-        let HomeVC = storyboard.instantiateViewController(withIdentifier: "Home") as! HomeVC
-        let initialVC = Loggedin ? HomeVC : LoginVC
+        let TabBar = storyboard.instantiateViewController(withIdentifier: "TabBar")
+        let initialVC = Loggedin ? TabBar : LoginVC
         
         window.rootViewController = initialVC // Your RootViewController in here
         self.window = window

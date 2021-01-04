@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5910DEF225A14C860014D98F /* CodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF125A14C860014D98F /* CodeVC.swift */; };
+		5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF425A14CAC0014D98F /* MapVC.swift */; };
+		5910DEF825A14CC00014D98F /* MeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF725A14CC00014D98F /* MeVC.swift */; };
 		5952FB7925995D6800958711 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952FB7825995D6800958711 /* HomeVC.swift */; };
 		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
 		59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */; };
@@ -20,7 +23,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5910DEF125A14C860014D98F /* CodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVC.swift; sourceTree = "<group>"; };
+		5910DEF425A14CAC0014D98F /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
+		5910DEF725A14CC00014D98F /* MeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeVC.swift; sourceTree = "<group>"; };
 		5952FB7825995D6800958711 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
+		59B2298D25A27D6C00811EAB /* IVMSP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IVMSP.entitlements; sourceTree = "<group>"; };
 		59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController_Extensions.swift; sourceTree = "<group>"; };
 		59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		59CD125A255E023900D2AE6B /* IVMSP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IVMSP.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,10 +55,12 @@
 		5952FB7725995D1500958711 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */,
-				59CD1261255E023900D2AE6B /* LoginVC.swift */,
+				59F9429325A120D1002AAA9C /* Authentication */,
 				59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */,
 				5952FB7825995D6800958711 /* HomeVC.swift */,
+				5910DEF125A14C860014D98F /* CodeVC.swift */,
+				5910DEF425A14CAC0014D98F /* MapVC.swift */,
+				5910DEF725A14CC00014D98F /* MeVC.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -75,6 +84,7 @@
 		59CD125C255E023900D2AE6B /* IVMSP */ = {
 			isa = PBXGroup;
 			children = (
+				59B2298D25A27D6C00811EAB /* IVMSP.entitlements */,
 				5952FB7725995D1500958711 /* ViewController */,
 				59CD125D255E023900D2AE6B /* AppDelegate.swift */,
 				59CD125F255E023900D2AE6B /* SceneDelegate.swift */,
@@ -85,6 +95,15 @@
 				59CD1266255E023900D2AE6B /* IVMSP.xcdatamodeld */,
 			);
 			path = IVMSP;
+			sourceTree = "<group>";
+		};
+		59F9429325A120D1002AAA9C /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */,
+				59CD1261255E023900D2AE6B /* LoginVC.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,12 +176,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5910DEF825A14CC00014D98F /* MeVC.swift in Sources */,
 				59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */,
 				5952FB7925995D6800958711 /* HomeVC.swift in Sources */,
 				59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */,
+				5910DEF225A14C860014D98F /* CodeVC.swift in Sources */,
 				59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */,
 				59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */,
 				59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */,
+				5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */,
 				59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,14 +332,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = IVMSP/IVMSP.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 45B78F727M;
+				DEVELOPMENT_TEAM = 5TNCMNH52H;
 				INFOPLIST_FILE = IVMSP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.greatapps.IVMSP;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yishengli.IVMSP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -329,14 +352,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = IVMSP/IVMSP.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 45B78F727M;
+				DEVELOPMENT_TEAM = 5TNCMNH52H;
 				INFOPLIST_FILE = IVMSP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.greatapps.IVMSP;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yishengli.IVMSP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
