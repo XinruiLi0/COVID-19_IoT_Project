@@ -80,40 +80,11 @@ namespace Web.Models
                 };
         }
 
-        private static Dictionary<int, Dictionary<string, string>> getGuardDevices(int ID)
-        {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID from GuardDevices where ID = {ID}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
-
-                    return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            return DataTableToDictionary(ds.Tables[0]);
-        }
-
+        /// <summary>
+        /// Private method for checking user id by email.
+        /// </summary>
+        /// <param name="userEmail">User email</param>
+        /// <returns>Return user id.</returns>
         private static int getUserID(string userEmail)
         {
             DataSet ds = new DataSet();
@@ -139,6 +110,45 @@ namespace Web.Models
 
             var result = DataTableToDictionary(ds.Tables[0]);
             return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
+        }
+
+        /// <summary>
+        /// Private method for getting a list of guard devices by guard id.
+        /// </summary>
+        /// <param name="ID">Guard id</param>
+        /// <returns>A list of guard devices.</returns>
+        private static Dictionary<int, Dictionary<string, string>> getGuardDevices(int ID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID, Description from GuardDevices where ID = {ID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+
+                    return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return DataTableToDictionary(ds.Tables[0]);
         }
 
         /// <summary>
@@ -429,30 +439,50 @@ namespace Web.Models
         }
 
         /// <summary>
-        /// Raise an alert to prodiction subsystem for abnormal visitor's body temperature.
+        /// Get guard devices by guard email and password.
         /// </summary>
-        /// <param name="userEmail">Current user email</param>
-        /// <param name="userPassword">Current user password</param>
-        /// <param name="visitorEmail">Visitor Email</param>
-        /// <returns>Return success message in default.</returns>
-        public static Dictionary<string, string> abnormalBodyTrmperatureAlert(string userEmail, string userPassword, string visitorEmail)
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <returns>A dictionary of guard devices.</returns>
+        public static Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 2);
             if (!check["result"].Equals("success"))
             {
-                return check;
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, check}
+                };
             }
 
-            // More detail need to be added.
-            return new Dictionary<string, string>
+            // Get User ID
+            var id = getUserID(userEmail);
+            if (id == 0)
             {
-                {"result","success"}, {"message", "Alert received."}
-            };
+                var temp = new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account not exist."}
+                };
+
+                return new Dictionary<int, Dictionary<string, string>>
+                {
+                    {0, temp}
+                };
+            }
+
+            return getGuardDevices(id);
         }
 
-
-        public static Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword)
+        /// <summary>
+        /// Register new guard devices.
+        /// </summary>
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="deviceDescription">Device description</param>
+        /// <returns>A dictionary of updated guard devices.</returns>
+        public static Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword, string deviceID, string deviceDescription)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 2);
@@ -486,7 +516,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID) value ({id}); ", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description) value ({id}, '{deviceID}', '{deviceDescription}'); ", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -511,8 +541,14 @@ namespace Web.Models
             return getGuardDevices(id);
         }
 
-
-        public static Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, int deviceID)
+        /// <summary>
+        /// Delete existed guard device.
+        /// </summary>
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary of updated guard devices.</returns>
+        public static Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, string deviceID)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 2);
@@ -546,7 +582,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"delete from GuardDevices where ID = {id} and DeviceID = {deviceID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"delete from GuardDevices where ID = {id} and DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -571,7 +607,13 @@ namespace Web.Models
             return getGuardDevices(id);
         }
 
-        public static Dictionary<string, string> guardDeviceChecking(int deviceID, string visitorEmail, float temperature)
+        /// <summary>
+        /// Update visitor status to guard device list.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="visitorEmail">Visitor Email</param>
+        /// <returns>Return success in default, return exception otherwise.</returns>
+        public static Dictionary<string, string> visitorDetect(string deviceID, string visitorEmail)
         {
             DataSet ds = new DataSet();
 
@@ -580,7 +622,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', VisitorTemperature = {temperature}, LastUpdated = GETDATE() where DeviceID = {deviceID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -603,7 +645,13 @@ namespace Web.Models
             };
         }
 
-        public static Dictionary<string, string> guardChecking(int deviceID)
+        /// <summary>
+        /// Update scanned body temperature to device.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="temperature">Visitor's body temperature</param>
+        /// <returns>Return success in default, return exception otherwise.</returns>
+        public static Dictionary<string, string> visitorTemperatureUpdate(string deviceID, float temperature)
         {
             DataSet ds = new DataSet();
 
@@ -612,7 +660,44 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select * from GuardDevices where DeviceID = {deviceID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorTemperature = {temperature} where DeviceID = '{deviceID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return new Dictionary<string, string>
+            {
+                {"result","success"}, {"message", "Success."}
+            };
+        }
+
+        /// <summary>
+        /// Check the visitor who being detected by guard device.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary contains visitor health status.</returns>
+        public static Dictionary<string, string> visitorInfoCheck(string deviceID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, GuardDevices.LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorEmail = AccountLogin.UserEmail join HealthStatus on AccountLogin.ID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)

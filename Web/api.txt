@@ -3,6 +3,13 @@ Note: All unauthorized request and error will return in following format:
 	"result": "error",
 	"message": "Detail for this error."
 }
+or
+{
+	0: 	{
+			"result": "error",
+			"message": "Detail for this error."
+		}
+}
 
 User Register: (Privide the register server to user, guard, and doctor)
 	type: post
@@ -97,20 +104,126 @@ Patient status update: (Provide health update server to doctor)
 			"UserStatus": 0
 		}
 
-Abnormal visitor body temporture alert: (Provide alert server to guard)
+Get guard devices: (Provice checking server to guard)
 	type: post
-	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/abnormalBodyTrmperatureAlert
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/getGuardDevices
 	Content-Type: application/json
-	body(submit data): userEmail, userPassword, visitorEmail
+	body(submit data): userEmail, userPassword
+		example:
+		{
+			"userEmail": "a",
+			"userPassword": "b"
+		}
+	return data:
+		example:
+		{
+			0: 	{
+					"DeviceID": "c",
+					"Description": "d"
+				},
+			1:	{
+					"DeviceID": "e",
+					"Description": "f"
+				}
+		}
+
+Register guard devices: (Provice device adding server to guard)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/registerGuardDevice
+	Content-Type: application/json
+	body(submit data): userEmail, userPassword, deviceID, deviceDescription
 		example:
 		{
 			"userEmail": "a",
 			"userPassword": "b",
-			"visitorEmail": "c"
+			"deviceID": "c",
+			"deviceDescription": "d"
+		}
+	return data:
+		example:
+		{
+			0: 	{
+					"DeviceID": "c",
+					"Description": "d"
+				},
+			1:	{
+					"DeviceID": "e",
+					"Description": "f"
+				}
+		}
+
+Delete guard devices: (Provice device removing server to guard)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/deleteGuardDevice
+	Content-Type: application/json
+	body(submit data): userEmail, userPassword, deviceID
+		example:
+		{
+			"userEmail": "a",
+			"userPassword": "b",
+			"deviceID": "c"
+		}
+	return data:
+		example:
+		{
+			0: 	{
+					"DeviceID": "c",
+					"Description": "d"
+				},
+			1:	{
+					"DeviceID": "e",
+					"Description": "f"
+				}
+		}
+
+Entrance visitor detection: (Provice device info updating server to user nfc app)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorDetect
+	Content-Type: application/json
+	body(submit data): deviceID, visitorEmail
+		example:
+		{
+			"deviceID": "a",
+			"visitorEmail": "b"
 		}
 	return data:
 		example:
 		{
 			"result": "success",
-			"message": "Alert recived."
+			"message": "Success."
+		}
+
+Entrance temperature detection: (Provice device info updating server to guard's temperature sensor)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorTemperatureUpdate
+	Content-Type: application/json
+	body(submit data): deviceID, temperature
+		example:
+		{
+			"deviceID": "a",
+			"temperature": 37.1
+		}
+	return data:
+		example:
+		{
+			"result": "success",
+			"message": "Success."
+		}
+
+Entrance monitor: (Provice device info updating server to guard's web)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorInfoCheck
+	Content-Type: application/json
+	body(submit data): deviceID
+		example:
+		{
+			"deviceID": "a"
+		}
+	return data:
+		example:
+		{
+			"UserName": "b",
+			"UserStatus": 0,
+			"VisitorTemperature": 37.1
+			"LastUpdated": "2021-01-03 21:44:57.367"
 		}
