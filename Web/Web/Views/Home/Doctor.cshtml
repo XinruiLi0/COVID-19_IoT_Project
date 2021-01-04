@@ -28,11 +28,10 @@
         var getUserName = getCookie("username");
         $("#getUserName").html(getUserName);
 
-
         $('#searchBtn').click(function () {
             var getUserEmail = getCookie("userEmail");
             var getUserPassword = getCookie("userPassword");
-            
+
             if ($('#searchBox').val() != '') {
                 $.ajax({
                     type: "POST",
@@ -51,9 +50,6 @@
                             $('#vistorHealthStatus').html("Infected");
                         }
 
-
-
-
                     }
                 });
 
@@ -64,7 +60,7 @@
             }
         });
     }
-    
+
     function healthy() {
         var getUserEmail = getCookie("userEmail");
         var getUserPassword = getCookie("userPassword");
@@ -97,9 +93,18 @@
         }
     }
 
+    function eraseCookie(name) {
+        var date = new Date();
+        date.setTime(date.getTime() - 10000);
+        document.cookie = name + "=v; expire=" + date.toGMTString() + "; path=/";
+     }
 
-
-
+    function signOut() {
+        eraseCookie("userEmail");
+        eraseCookie("userPassword");
+        eraseCookie("username");
+        window.location.href = '@Url.Action("Login", "Login")';
+    }
 
 
 </script>
@@ -180,7 +185,7 @@
 </div>
 
 <div>
-    <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="location.href='@Url.Action("Login", "Login")'" />
+    <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="signOut()" />
 </div>
 
 
