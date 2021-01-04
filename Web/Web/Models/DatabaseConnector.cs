@@ -80,6 +80,11 @@ namespace Web.Models
                 };
         }
 
+        /// <summary>
+        /// Private method for checking user id by email.
+        /// </summary>
+        /// <param name="userEmail">User email</param>
+        /// <returns>Return user id.</returns>
         private static int getUserID(string userEmail)
         {
             DataSet ds = new DataSet();
@@ -107,6 +112,11 @@ namespace Web.Models
             return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
         }
 
+        /// <summary>
+        /// Private method for getting a list of guard devices by guard id.
+        /// </summary>
+        /// <param name="ID">Guard id</param>
+        /// <returns>A list of guard devices.</returns>
         private static Dictionary<int, Dictionary<string, string>> getGuardDevices(int ID)
         {
             DataSet ds = new DataSet();
@@ -116,7 +126,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID from GuardDevices where ID = {ID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID, Description from GuardDevices where ID = {ID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -428,6 +438,12 @@ namespace Web.Models
                 };
         }
 
+        /// <summary>
+        /// Get guard devices by guard email and password.
+        /// </summary>
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <returns>A dictionary of guard devices.</returns>
         public static Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
         {
             // Check permission
@@ -458,6 +474,14 @@ namespace Web.Models
             return getGuardDevices(id);
         }
 
+        /// <summary>
+        /// Register new guard devices.
+        /// </summary>
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="deviceDescription">Device description</param>
+        /// <returns>A dictionary of updated guard devices.</returns>
         public static Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword, string deviceID, string deviceDescription)
         {
             // Check permission
@@ -517,7 +541,13 @@ namespace Web.Models
             return getGuardDevices(id);
         }
 
-
+        /// <summary>
+        /// Delete existed guard device.
+        /// </summary>
+        /// <param name="userEmail">Guard email</param>
+        /// <param name="userPassword">Guard password</param>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary of updated guard devices.</returns>
         public static Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, string deviceID)
         {
             // Check permission
@@ -577,7 +607,12 @@ namespace Web.Models
             return getGuardDevices(id);
         }
 
-
+        /// <summary>
+        /// Update visitor status to guard device list.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="visitorEmail">Visitor Email</param>
+        /// <returns>Return success in default, return exception otherwise.</returns>
         public static Dictionary<string, string> visitorDetect(string deviceID, string visitorEmail)
         {
             DataSet ds = new DataSet();
@@ -610,7 +645,12 @@ namespace Web.Models
             };
         }
 
-
+        /// <summary>
+        /// Update scanned body temperature to device.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <param name="temperature">Visitor's body temperature</param>
+        /// <returns>Return success in default, return exception otherwise.</returns>
         public static Dictionary<string, string> visitorTemperatureUpdate(string deviceID, float temperature)
         {
             DataSet ds = new DataSet();
@@ -643,7 +683,11 @@ namespace Web.Models
             };
         }
 
-
+        /// <summary>
+        /// Check the visitor who being detected by guard device.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary contains visitor health status.</returns>
         public static Dictionary<string, string> visitorInfoCheck(string deviceID)
         {
             DataSet ds = new DataSet();
