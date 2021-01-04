@@ -27,6 +27,14 @@ namespace Web.Controllers
         {
             return View();
         }
+        public IActionResult Edit()
+        {
+            return View();
+        }
+        public IActionResult User()
+        {
+            return View();
+        }
 
         public IActionResult Guard()
         {

@@ -5,6 +5,10 @@
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
 
+    var userEmail;
+    var userName;
+    var userStatus;
+
     function getCookie(c_name) {
         if (document.cookie.length > 0) {
             c_start = document.cookie.indexOf(c_name + "=");
@@ -21,33 +25,77 @@
     }
 
     window.onload = function () {
-        var userName = getCookie("username");
-        $("#getUserName").html(userName);
-    }
+        var getUserName = getCookie("username");
+        $("#getUserName").html(getUserName);
 
-    $(document).ready(function () {
+
         $('#searchBtn').click(function () {
-            var txt = $('#searchBox').val();
-            var userEmail = getCookie("userEmail");
-            var userPassword = getCookie("userPassword");
-            var userRole = getCookie("userRole");
-            if (txt != '') {
+            var getUserEmail = getCookie("userEmail");
+            var getUserPassword = getCookie("userPassword");
+            
+            if ($('#searchBox').val() != '') {
                 $.ajax({
                     type: "POST",
                     dataType: "text",
-                    url: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkVisitorStatus",
-                    data: { "userEmail": userEmail, "userPassword": userPassword, "userRole": userRole, "vistorEmail": txt },
+                    url: "/Home/checkPatientStatus",
+                    data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": $('#searchBox').val() },
                     success: function (data) {
-                        $('#result').html(data);
+                        userName = JSON.parse(data).UserName;
+                        userEmail = JSON.parse(data).UserEmail;
+                        userStatus = JSON.parse(data).UserStatus;
+                        $('#vistorName').html(userName);
+                        $('#vistorEmail').html(userEmail);
+                        if (userStatus == "0") {
+                            $('#vistorHealthStatus').html("Healthy");
+                        } else if (userStatus == "1"){
+                            $('#vistorHealthStatus').html("Infected");
+                        }
+
+
+
+
                     }
                 });
-            }
-            else {
-                $('#result').html('');
+
+            } else {
+                $('#vistorName').html("");
+                $('#vistorEmail').html("");
+                $('#vistorHealthStatus').html("");
             }
         });
-    });
+    }
+    
+    function healthy() {
+        var getUserEmail = getCookie("userEmail");
+        var getUserPassword = getCookie("userPassword");
+        if (userName != "" && userEmail != "") {
+            $.ajax({
+                type: "POST",
+                dataType: "text",
+                url: "/Home/updatePatientStatus",
+                data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": userEmail, "status": 0 },
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        }
+    }
 
+    function infected() {
+        var getUserEmail = getCookie("userEmail");
+        var getUserPassword = getCookie("userPassword");
+        if (userName != "" && userEmail != "") {
+            $.ajax({
+                type: "POST",
+                dataType: "text",
+                url: "/Home/updatePatientStatus",
+                data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": userEmail, "status": 1 },
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        }
+    }
 
 
 
@@ -99,7 +147,7 @@
     <p class="SearchingHint">Please input the name of the patient:</p>
     <form class="searching" >
         <input id="searchBox" type="text" placeholder="Search.." name="searchBox">
-        <button id="searchBtn" onclick="SearchAjax();" type="submit"><i class="fa fa-search" name ="searchBtn"></i>Search</button>
+        <input id="searchBtn" type="button" class="fa fa-search" name ="searchBtn" value="Search"/>
     </form>
     <div id="result">
         <div>
@@ -109,17 +157,30 @@
                     <thead>
                         <tr>
                             <th>Vistor Name</th>
+                            <th>Vistor Email</th>
                             <th>Health Status</th>
                             <th>Option</th>
                         </tr>
                     </thead>
                     <tbody>
-
+                        <tr>
+                            <td id="vistorName"></td>
+                            <td id="vistorEmail"></td>
+                            <td id="vistorHealthStatus"></td>
+                            <td id="option">
+                                <input class="btn btn-info btn-lg" type="button" value="Healthy" onclick="healthy();" />
+                                <input class="btn btn-info btn-lg" type="button" value="Infected" onclick="infected();"/>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
+
+<div>
+    <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="location.href='@Url.Action("Login", "Login")'" />
 </div>
 
 

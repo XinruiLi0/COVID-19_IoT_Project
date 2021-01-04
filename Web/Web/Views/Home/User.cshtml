@@ -4,6 +4,8 @@
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script type="text/javascript">
 
+        var userName;
+        var userStatus;
         function getCookie(c_name) {
             if (document.cookie.length > 0) {
                 c_start = document.cookie.indexOf(c_name + "=");
@@ -22,7 +24,33 @@
         window.onload = function () {
             var userName = getCookie("username");
             $("#getUserName").html(userName);
+
+            var getUserEmail = getCookie("userEmail");
+            var getUserPassword = getCookie("userPassword");
+            $.ajax({
+                type: "POST",
+                dataType: "text",
+                url: "/Home/checkUserStatus",
+                data: { "userEmail": getUserEmail, "userPassword": getUserPassword },
+                success: function (data) {
+                    userName = JSON.parse(data).UserName;
+                    userStatus = JSON.parse(data).UserStatus;
+                    $('#vistorName').html(userName);
+                    if (userStatus == "0") {
+                        $('#vistorHealthStatus').html("Healthy");
+                    } else if (userStatus == "1") {
+                        $('#vistorHealthStatus').html("Infected");
+                    }
+
+
+
+
+                }
+            });
+
         }
+
+
 
 
 
@@ -36,8 +64,8 @@
                         <div class="row m-l-0 m-r-0">
                             <div class="col-sm-4 bg-c-lite-green user-profile">
                                 <div class="card-block text-center text-white">
-                                    <div class="m-b-25"> <img src="~/doctor.jpg" class="img-radius" alt="Doctor" style="width:50%; height:50%; margin:auto;"> </div>
-                                    <h6 style="color:black" class="f-w-600">Doctor</h6>
+                                    <div class="m-b-25"> <img src="~/user.png" class="img-radius" alt="User" style="width:50%; height:50%; margin:auto;"> </div>
+                                    <h6 style="color:black" class="f-w-600">Normal User</h6>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -65,4 +93,31 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div>
+        <div id="result">
+            <div>
+                <h4 align="center">User Information</h4>
+                <div class="table-responsive">
+                    <table class="table table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Vistor Name</th>
+                                <th>Health Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="vistorName"></td>
+                                <td id="vistorHealthStatus"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="location.href='@Url.Action("Login", "Login")'" />
     </div>
