@@ -29,10 +29,10 @@
                     success: function (data) {
                         var res = eval("(" + data + ")");
                         if (res.result == "success") {
-                            createCookie("userEmail", $("#email").val(),1);
-                            createCookie("userPassword", $("#password").val(),1);
-                            createCookie("userRole", 3, 1);
-                            createCookie("username", res.message, 1);
+                            createCookie("userEmail", $("#email").val());
+                            createCookie("userPassword", $("#password").val());
+                            createCookie("userRole", 3);
+                            createCookie("username", res.message);
                             window.location.href = '@Url.Action("Doctor", "Home")';
                         }
                         else {
@@ -54,10 +54,10 @@
                     success: function (data) {
                         var res = eval("(" + data + ")");
                         if (res.result == "success") {
-                            createCookie("userEmail", $("#email").val(),1);
-                            createCookie("userPassword", $("#password").val(),1);
-                            createCookie("userRole", 2, 1);
-                            createCookie("username", res.message, 1);
+                            createCookie("userEmail", $("#email").val());
+                            createCookie("userPassword", $("#password").val());
+                            createCookie("userRole", 2);
+                            createCookie("username", res.message);
                             window.location.href = '@Url.Action("Guard", "Home")';
                         }
                         else {
@@ -79,10 +79,10 @@
                     success: function (data) {
                         var res = eval("(" + data + ")");
                         if (res.result == "success") {
-                            createCookie("userEmail", $("#email").val(),1);
-                            createCookie("userPassword", $("#password").val(),1);
-                            createCookie("userRole", 1, 1);
-                            createCookie("username", res.message, 1);
+                            createCookie("userEmail", $("#email").val());
+                            createCookie("userPassword", $("#password").val());
+                            createCookie("userRole", 1);
+                            createCookie("username", res.message);
                             window.location.href = '@Url.Action("User", "Home")';
                         }
                         else {
