@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Web.Models;
+using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
@@ -27,7 +28,7 @@ namespace Web.Controllers
         {
             return View();
         }
-        public IActionResult Edit()
+        public IActionResult GuardList()
         {
             return View();
         }
@@ -66,21 +67,21 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> getGuardDevices(string userEmail, string userPassword)
+        public string getGuardDevices(string userEmail, string userPassword)
         {
-            return DatabaseConnector.getGuardDevices(userEmail, userPassword);
+            return JsonConvert.SerializeObject(DatabaseConnector.getGuardDevices(userEmail, userPassword));
         }
 
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> registerGuardDevice(string userEmail, string userPassword, string deviceID, string deviceDescription)
+        public string registerGuardDevice(string userEmail, string userPassword, string deviceID, string deviceDescription)
         {
-            return DatabaseConnector.registerGuardDevice(userEmail, userPassword, deviceID, deviceDescription);
+            return JsonConvert.SerializeObject(DatabaseConnector.registerGuardDevice(userEmail, userPassword, deviceID, deviceDescription));
         }
 
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> deleteGuardDevice(string userEmail, string userPassword, string deviceID)
+        public string deleteGuardDevice(string userEmail, string userPassword, string deviceID)
         {
-            return DatabaseConnector.deleteGuardDevice(userEmail, userPassword, deviceID);
+            return JsonConvert.SerializeObject(DatabaseConnector.deleteGuardDevice(userEmail, userPassword, deviceID));
         }
 
         [HttpPost]

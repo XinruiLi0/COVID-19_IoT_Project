@@ -58,7 +58,7 @@
                             createCookie("userPassword", $("#password").val());
                             createCookie("userRole", 2);
                             createCookie("username", res.message);
-                            window.location.href = '@Url.Action("Guard", "Home")';
+                            window.location.href = '@Url.Action("GuardList", "Home")';
                         }
                         else {
                             alert(res.message);

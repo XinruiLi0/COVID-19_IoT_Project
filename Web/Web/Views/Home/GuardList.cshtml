@@ -1,0 +1,52 @@
+﻿@*
+    ViewData["Title"] = "GuardList";
+*@
+
+<script type="text/javascript">
+    window.onload = function() {
+        var userem = getCookie("userEmail");
+        var username = getCookie("username");
+        var userpass = getCookie("userPassword");
+        var userrol = getCookie("userRole");
+        $("#wel").html("Welcome the Guard User: " + userem);
+        $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!");
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Home/getGuardDevices",
+            data: { "userEmail": userem, "userPassword": userpass },
+            success: function (data) {
+                alert(data);
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        });
+    }
+    
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) {
+                    c_end = document.cookie.length;
+                }
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    }
+
+    function showList(data) {
+
+    }
+
+</script>
+
+<h1 id="wel"> </h1>
+<h5 id="thx"> </h5>
+<div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
+    <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
+</div>
