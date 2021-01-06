@@ -622,7 +622,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
