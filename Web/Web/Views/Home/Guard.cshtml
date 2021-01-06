@@ -10,6 +10,19 @@
         $("#wel").html("Welcome the Guard User: " + userem);
         $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
 
+        var device = getCookie("deviceid");
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Home/visitorInfoCheck",
+            data: { "deviceID": device },
+            success: function (data) {
+                alert(data);
+            },
+            error: function (xhr, ts, et) {
+                alert("Error");
+            }
+        })
     }
 
     function FormAjax() {
@@ -87,11 +100,7 @@
             <input class="btn btn-primary" id="searching" onClick="FormAjax();" type="button" value="Submit">
         </form>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+
     <br>
     <br>
     <br>
