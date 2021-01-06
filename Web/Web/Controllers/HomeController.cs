@@ -91,6 +91,12 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        public Dictionary<string, string> incomingVisitorDetect(string deviceID)
+        {
+            return DatabaseConnector.incomingVisitorDetect(deviceID);
+        }
+
+        [HttpPost]
         public Dictionary<string, string> visitorTemperatureUpdate(string deviceID, float temperature)
         {
             return DatabaseConnector.visitorTemperatureUpdate(deviceID, temperature);

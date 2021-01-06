@@ -11,7 +11,7 @@ or
 		}
 }
 
-User Register: (Privide the register server to user, guard, and doctor)
+User Register: (Provides the register server to user, guard, and doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 	Content-Type: application/json
@@ -30,7 +30,7 @@ User Register: (Privide the register server to user, guard, and doctor)
 			"message": "Success."
 		}
 
-User Login: (Provide login to user, guard, and doctor)
+User Login: (Provides login to user, guard, and doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 	Content-Type: application/json
@@ -48,7 +48,7 @@ User Login: (Provide login to user, guard, and doctor)
 			"message": "User Name"
 		}
 
-User self-check: (Provide self-check server to user only)
+User self-check: (Provides self-check server to user only)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
 	Content-Type: application/json
@@ -65,7 +65,7 @@ User self-check: (Provide self-check server to user only)
 			"UserStatus": 0
 		}
 
-Patient status check: (Provide health check server to doctor)
+Patient status check: (Provides health check server to doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkPatientStatus
 	Content-Type: application/json
@@ -84,7 +84,7 @@ Patient status check: (Provide health check server to doctor)
 			"UserStatus": 0
 		}
 
-Patient status update: (Provide health update server to doctor)
+Patient status update: (Provides health update server to doctor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/updatePatientStatus
 	Content-Type: application/json
@@ -104,7 +104,7 @@ Patient status update: (Provide health update server to doctor)
 			"UserStatus": 0
 		}
 
-Get guard devices: (Provice checking server to guard)
+Get guard devices: (Provides checking server to guard)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/getGuardDevices
 	Content-Type: application/json
@@ -127,7 +127,7 @@ Get guard devices: (Provice checking server to guard)
 				}
 		}
 
-Register guard devices: (Provice device adding server to guard)
+Register guard devices: (Provides device adding server to guard)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/registerGuardDevice
 	Content-Type: application/json
@@ -152,7 +152,7 @@ Register guard devices: (Provice device adding server to guard)
 				}
 		}
 
-Delete guard devices: (Provice device removing server to guard)
+Delete guard devices: (Provides device removing server to guard)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/deleteGuardDevice
 	Content-Type: application/json
@@ -176,7 +176,7 @@ Delete guard devices: (Provice device removing server to guard)
 				}
 		}
 
-Entrance visitor detection: (Provice device info updating server to user nfc app)
+Entrance visitor detection: (Provides device info updating server to user nfc app)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorDetect
 	Content-Type: application/json
@@ -193,7 +193,22 @@ Entrance visitor detection: (Provice device info updating server to user nfc app
 			"message": "Success."
 		}
 
-Entrance temperature detection: (Provice device info updating server to guard's temperature sensor)
+Incoming vicitor checking: (Provides incoming vicitor checking server to guard device)
+	type: post
+	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/incomingVisitorDetect
+	Content-Type: application/json
+	body(submit data): deviceID
+		example:
+		{
+			"deviceID": "a"
+		}
+	return data:
+		example:
+		{
+			"result": "true"
+		}
+
+Entrance temperature detection: (Provides device info updating server to guard's temperature sensor)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorTemperatureUpdate
 	Content-Type: application/json
@@ -210,7 +225,7 @@ Entrance temperature detection: (Provice device info updating server to guard's 
 			"message": "Success."
 		}
 
-Entrance monitor: (Provice device info updating server to guard's web)
+Entrance monitor: (Provides device info updating server to guard's web)
 	type: post
 	url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorInfoCheck
 	Content-Type: application/json
