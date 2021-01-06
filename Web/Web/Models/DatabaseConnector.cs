@@ -754,7 +754,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, GuardDevices.LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorEmail = AccountLogin.UserEmail join HealthStatus on AccountLogin.ID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, DATEDIFF(ss, GuardDevices.LastUpdated, GETDATE()) AS LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorEmail = AccountLogin.UserEmail join HealthStatus on AccountLogin.ID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)

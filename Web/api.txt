@@ -240,5 +240,5 @@ Entrance monitor: (Provides device info updating server to guard's web)
 			"UserName": "b",
 			"UserStatus": 0,
 			"VisitorTemperature": 37.1
-			"LastUpdated": "2021-01-03 21:44:57.367"
+			"LastUpdated": "1362"  // 1362 seconds after the last update
 		}
