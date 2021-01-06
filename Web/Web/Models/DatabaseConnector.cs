@@ -516,7 +516,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description) value ({id}, '{deviceID}', '{deviceDescription}'); ", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description) values ({id}, '{deviceID}', '{deviceDescription}'); ", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
