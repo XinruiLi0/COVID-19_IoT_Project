@@ -516,7 +516,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description) values ({id}, '{deviceID}', '{deviceDescription}'); ", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description, VisitorTemperature) values ({id}, '{deviceID}', '{deviceDescription}', 37); ", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -622,7 +622,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -643,6 +643,63 @@ namespace Web.Models
             {
                 {"result","success"}, {"message", "Success."}
             };
+        }
+
+        /// <summary>
+        /// Check whether there is a visitor waiting for temperature scanning.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>Return true if a visitor is waiting.</returns>
+        public static Dictionary<string, string> incomingVisitorDetect(string deviceID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select VisitorTemperature from GuardDevices where DeviceID = '{deviceID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var result = DataTableToDictionary(ds.Tables[0]);
+            if (result.Count == 0)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Device not registered."}
+                };
+            }
+
+            if (int.Parse(result[0]["VisitorTemperature"]) == 0)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","true"}
+                };
+            }
+            else
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","false"}
+                };
+            }
+            
         }
 
         /// <summary>
