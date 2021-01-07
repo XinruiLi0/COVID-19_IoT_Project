@@ -215,14 +215,8 @@ namespace Web.Models
                 };
         }
 
-        private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
+        private static ConcurrentBag<Dictionary<string, string>> getCurrentContacts(string guardID)
         {
-            var check = prepareActivityUpdate(deviceID);
-            if (!check["result"].Equals("success"))
-            {
-                return check;
-            }
-
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -230,15 +224,12 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {check["ID"]}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {guardID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
+                    throw e;
                 }
                 finally
                 {
@@ -247,12 +238,36 @@ namespace Web.Models
                 }
             }
 
+            return DataTableToConcurrentBag(ds.Tables[0]);
+        }
+
+        private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
+        {
+            var check = prepareActivityUpdate(deviceID);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            var visitorList = new ConcurrentBag<Dictionary<string, string>>();
+            try
+            {
+                visitorList = getCurrentContacts(check["ID"]);
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
             try
             {
                 Parallel.Invoke(
                     () =>
                     {
-                        var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
+                        DataSet ds = new DataSet();
 
                         Parallel.ForEach(visitorList, (v) =>
                         {
@@ -278,6 +293,8 @@ namespace Web.Models
                     },
                     () =>
                     {
+                        DataSet ds = new DataSet(); 
+                        
                         using (SqlConnection connection = new SqlConnection(connectionstring))
                         {
                             try
@@ -835,6 +852,113 @@ namespace Web.Models
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
                 }
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        /// <summary>
+        /// Check whether there is a visitor waiting for temperature scanning.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>Return true if a visitor is waiting.</returns>
+        public static Dictionary<string, string> leavingVisitorDetect(string deviceID, string visitorEmail)
+        {
+            // Get User ID
+            var visitorID = getUserID(visitorEmail);
+            if (visitorID == 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
+            }
+
+            // Get Guard ID
+            var check = prepareActivityUpdate(deviceID);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            var visitorList = new ConcurrentBag<Dictionary<string, string>>();
+            try
+            {
+                visitorList = getCurrentContacts(check["ID"]);
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            try
+            {
+                Parallel.Invoke(
+                    () =>
+                    {
+                        DataSet ds = new DataSet();
+
+                        Parallel.ForEach(visitorList, (v) =>
+                        {
+                            using (SqlConnection connection = new SqlConnection(connectionstring))
+                            {
+                                if (visitorID == int.Parse(v["Visitor_ID"]))
+                                    return;
+
+                                try
+                                {
+                                    connection.Open();
+                                    SqlDataAdapter adp = new SqlDataAdapter($"update PersonalContact set EndTime = GETDATE() where Guard_ID = {check["ID"]} and EndTime is null and ((ID = {check["VisitorID"]} and Contact_ID = {v["Visitor_ID"]}) or (ID = {v["Visitor_ID"]} and Contact_ID = {check["VisitorID"]}))", connection);
+                                    adp.Fill(ds);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                finally
+                                {
+                                    if (connection.State == ConnectionState.Open)
+                                        connection.Close();
+                                }
+                            }
+                        });
+                    },
+                    () =>
+                    {
+                        DataSet ds = new DataSet();
+
+                        using (SqlConnection connection = new SqlConnection(connectionstring))
+                        {
+                            try
+                            {
+                                connection.Open();
+                                SqlDataAdapter adp = new SqlDataAdapter($"delete from CurrentContact where Visitor_ID = {check["VisitorID"]} and Guard_ID = {check["ID"]}", connection);
+                                adp.Fill(ds);
+                            }
+                            catch (Exception e)
+                            {
+                                throw e;
+                            }
+                            finally
+                            {
+                                if (connection.State == ConnectionState.Open)
+                                    connection.Close();
+                            }
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>
