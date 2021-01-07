@@ -16,16 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lc1-5r-LgC">
-                                <rect key="frame" x="176" y="543" width="39" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Scan ">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="scanButton:" destination="exE-4W-hYU" eventType="touchUpInside" id="NRs-7R-8i0"/>
-                                </connections>
-                            </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="GLj-5S-Lhf">
                                 <rect key="frame" x="75" y="196" width="240" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -34,6 +24,27 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lc1-5r-LgC">
+                                <rect key="frame" x="29" y="547" width="128" height="82"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Scan NFC">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="scanButton:" destination="exE-4W-hYU" eventType="touchUpInside" id="NRs-7R-8i0"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cUw-CZ-ltr">
+                                <rect key="frame" x="202" y="547" width="128" height="82"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemIndigoColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Scan QR">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fbu-Tf-MaM"/>
                         <color key="backgroundColor" systemColor="systemTealColor"/>
@@ -41,12 +52,11 @@
                     <tabBarItem key="tabBarItem" title="Home" id="ynC-Gg-8TG"/>
                     <connections>
                         <outlet property="NFCText" destination="GLj-5S-Lhf" id="EgV-GO-EvT"/>
-                        <outlet property="scan" destination="lc1-5r-LgC" id="yT3-Wt-WSn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DYS-2W-aWf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-705" y="1393"/>
+            <point key="canvasLocation" x="-706.15384615384608" y="1392.654028436019"/>
         </scene>
         <!--LoginVC-->
         <scene sceneID="tne-QT-ifu">
@@ -271,30 +281,14 @@
                     </tabBar>
                     <connections>
                         <segue destination="exE-4W-hYU" kind="relationship" relationship="viewControllers" id="HYi-jN-Ruc"/>
-                        <segue destination="z4z-3I-3dM" kind="relationship" relationship="viewControllers" id="Nch-DR-Ipv"/>
                         <segue destination="b09-al-OV0" kind="relationship" relationship="viewControllers" id="D3Z-yi-9IX"/>
+                        <segue destination="rgz-Th-nkl" kind="relationship" relationship="viewControllers" id="WAP-86-QUi"/>
                         <segue destination="9h9-Xk-Mxr" kind="relationship" relationship="viewControllers" id="egQ-lH-LWz"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xbI-og-L4X" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-455" y="508"/>
-        </scene>
-        <!--Code-->
-        <scene sceneID="U27-jo-bNh">
-            <objects>
-                <viewController id="z4z-3I-3dM" customClass="CodeVC" customModule="IVMSP" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="MRG-0C-4ZY" customClass="Code">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="N5M-iz-djH"/>
-                        <color key="backgroundColor" systemColor="systemRedColor"/>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="Code" id="dug-ZA-Ac4"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="IjC-DO-98k" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-31" y="1393"/>
         </scene>
         <!--Map-->
         <scene sceneID="Fc7-5f-bzD">
@@ -310,7 +304,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PhA-C5-rOM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="638" y="1393"/>
+            <point key="canvasLocation" x="97" y="1393"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="1d5-PA-x5f">
+            <objects>
+                <viewController id="rgz-Th-nkl" customClass="BluetoothVC" customModule="IVMSP" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="c08-l9-dFM">
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="cfu-ee-csJ"/>
+                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item" id="ZZu-rk-P6d"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nat-xX-vsC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="742" y="1393"/>
         </scene>
         <!--Me-->
         <scene sceneID="FKN-Np-5R8">
@@ -326,7 +336,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9OA-ho-7nC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1312" y="1393"/>
+            <point key="canvasLocation" x="1388" y="1393"/>
         </scene>
     </scenes>
     <resources>
@@ -336,6 +346,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemIndigoColor">
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
             <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

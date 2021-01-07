@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5910DEF225A14C860014D98F /* CodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF125A14C860014D98F /* CodeVC.swift */; };
 		5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF425A14CAC0014D98F /* MapVC.swift */; };
 		5910DEF825A14CC00014D98F /* MeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF725A14CC00014D98F /* MeVC.swift */; };
 		5952FB7925995D6800958711 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952FB7825995D6800958711 /* HomeVC.swift */; };
+		59B2299125A6B67900811EAB /* BluetoothVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B2299025A6B67900811EAB /* BluetoothVC.swift */; };
 		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
 		59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */; };
 		59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125D255E023900D2AE6B /* AppDelegate.swift */; };
@@ -23,11 +23,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5910DEF125A14C860014D98F /* CodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVC.swift; sourceTree = "<group>"; };
 		5910DEF425A14CAC0014D98F /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
 		5910DEF725A14CC00014D98F /* MeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeVC.swift; sourceTree = "<group>"; };
 		5952FB7825995D6800958711 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		59B2298D25A27D6C00811EAB /* IVMSP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IVMSP.entitlements; sourceTree = "<group>"; };
+		59B2299025A6B67900811EAB /* BluetoothVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothVC.swift; sourceTree = "<group>"; };
 		59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController_Extensions.swift; sourceTree = "<group>"; };
 		59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		59CD125A255E023900D2AE6B /* IVMSP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IVMSP.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,8 +58,8 @@
 				59F9429325A120D1002AAA9C /* Authentication */,
 				59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */,
 				5952FB7825995D6800958711 /* HomeVC.swift */,
-				5910DEF125A14C860014D98F /* CodeVC.swift */,
 				5910DEF425A14CAC0014D98F /* MapVC.swift */,
+				59B2299025A6B67900811EAB /* BluetoothVC.swift */,
 				5910DEF725A14CC00014D98F /* MeVC.swift */,
 			);
 			path = ViewController;
@@ -180,12 +180,12 @@
 				59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */,
 				5952FB7925995D6800958711 /* HomeVC.swift in Sources */,
 				59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */,
-				5910DEF225A14C860014D98F /* CodeVC.swift in Sources */,
 				59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */,
 				59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */,
 				59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */,
 				5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */,
 				59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */,
+				59B2299125A6B67900811EAB /* BluetoothVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

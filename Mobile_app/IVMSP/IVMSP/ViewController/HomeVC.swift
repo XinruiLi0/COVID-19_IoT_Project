@@ -12,7 +12,6 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     
     @IBOutlet var NFCText: UITextView!
     
-    @IBOutlet var scan: UIButton!
     
     var nfcSession: NFCTagReaderSession?
     
@@ -27,13 +26,13 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         
     }
     
-    @IBAction func scanButton(_ sender: Any) {
+    @IBAction func onScanNFC(_ sender: Any) {
         self.nfcSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
         self.nfcSession?.alertMessage = "Please Hold Near NFC Tag"
         self.nfcSession?.begin()
     }
     
-    
+
     
     func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
         print("Session Begun")
@@ -59,7 +58,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
             if case let .miFare(sTag) = tag {
                 let UID = sTag.identifier.map{ String(format: "%.2hhx", $0)}.joined()
                 print("UID:", UID)
-                session.alertMessage = "Checked in \n Thank you"
+                session.alertMessage = "Checked In \n\n Thank You"
                 session.invalidate()
                 DispatchQueue.main.async {
                     self.NFCText.text = UID
