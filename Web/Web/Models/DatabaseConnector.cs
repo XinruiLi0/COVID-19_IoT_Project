@@ -206,7 +206,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}');", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}')", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -220,6 +220,33 @@ namespace Web.Models
                 {
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
+                }
+            }
+
+            if (userRole == 1) 
+            {
+                var id = getUserID(userEmail);
+
+                using (SqlConnection connection = new SqlConnection(connectionstring))
+                {
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adp = new SqlDataAdapter($"insert into HealthStatus (ID, UserStatus) values ({id}, 0)", connection);
+                        adp.Fill(ds);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
                 }
             }
 
@@ -615,6 +642,16 @@ namespace Web.Models
         /// <returns>Return success in default, return exception otherwise.</returns>
         public static Dictionary<string, string> visitorDetect(string deviceID, string visitorEmail)
         {
+            // Get User ID
+            var id = getUserID(visitorEmail);
+            if (id == 0)
+            {
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Account not exist."}
+                };
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -622,7 +659,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorEmail = '{visitorEmail}', VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorID = {id}, VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -754,7 +791,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, DATEDIFF(ss, GuardDevices.LastUpdated, GETDATE()) AS LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorEmail = AccountLogin.UserEmail join HealthStatus on AccountLogin.ID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, DATEDIFF(ss, GuardDevices.LastUpdated, GETDATE()) AS LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorID = AccountLogin.ID join HealthStatus on GuardDevices.VisitorID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
