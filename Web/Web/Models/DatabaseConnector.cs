@@ -38,6 +38,7 @@ namespace Web.Models
             {
                 result = null;
             }
+
             return result;
         }
 
@@ -65,6 +66,7 @@ namespace Web.Models
             {
                 result = null;
             }
+
             return result;
         }
 
@@ -88,9 +90,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -160,14 +162,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    };
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -194,9 +196,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -234,9 +236,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -248,10 +250,12 @@ namespace Web.Models
             try
             {
                 Parallel.Invoke(
-                    () => {
+                    () =>
+                    {
                         var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
 
-                        Parallel.ForEach(visitorList, (v) => {
+                        Parallel.ForEach(visitorList, (v) =>
+                        {
                             using (SqlConnection connection = new SqlConnection(connectionstring))
                             {
                                 try
@@ -268,11 +272,12 @@ namespace Web.Models
                                 {
                                     if (connection.State == ConnectionState.Open)
                                         connection.Close();
-                                    }
+                                }
                             }
                         });
                     },
-                    () => {
+                    () =>
+                    {
                         using (SqlConnection connection = new SqlConnection(connectionstring))
                         {
                             try
@@ -288,7 +293,7 @@ namespace Web.Models
                             finally
                             {
                                 if (connection.State == ConnectionState.Open)
-                                connection.Close();
+                                    connection.Close();
                             }
                         }
                     });
@@ -296,15 +301,15 @@ namespace Web.Models
             catch (Exception e)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", e.ToString()}
-                };
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Success."}
-            };
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -315,7 +320,7 @@ namespace Web.Models
         /// <param name="userPassword">User password</param>
         /// <param name="userRole">User role</param>
         /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
-        public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
+        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -330,9 +335,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -345,16 +350,16 @@ namespace Web.Models
             if (userEmail == null)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Unknow email."}
-                };
+                    {
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
             }
             else if (result.Count > 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account already exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
             }
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -368,9 +373,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -379,7 +384,7 @@ namespace Web.Models
                 }
             }
 
-            if (userRole == 1) 
+            if (userRole == 1)
             {
                 var id = getUserID(userEmail);
 
@@ -394,9 +399,9 @@ namespace Web.Models
                     catch (Exception e)
                     {
                         return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                            {
+                                {"result","error"}, {"message", e.ToString()}
+                            };
                     }
                     finally
                     {
@@ -407,9 +412,9 @@ namespace Web.Models
             }
 
             return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Success."}
-            };
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -434,9 +439,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -444,37 +449,37 @@ namespace Web.Models
                         connection.Close();
                 }
             }
-            
+
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
             if (userEmail == null || result.Count == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
             else if (userPassword == null || !userPassword.Equals(result[0]["UserPassword"]))
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Password incorrect."}
-                };
+                    {
+                        {"result","error"}, {"message", "Password incorrect."}
+                    };
             }
             else if (userRole != int.Parse(result[0]["UserRole"]))
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Usre didn't have permission in this role."}
-                };
+                    {
+                        {"result","error"}, {"message", "Usre didn't have permission in this role."}
+                    };
             }
             else
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","success"}, {"message", $"{result[0]["UserName"]}"}
-                };
+                    {
+                        {"result","success"}, {"message", $"{result[0]["UserName"]}"}
+                    };
             }
         }
 
@@ -506,9 +511,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -548,9 +553,9 @@ namespace Web.Models
             if (VisitorID == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -566,9 +571,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -601,9 +606,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -634,9 +639,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -644,14 +649,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             return getGuardDevices(id);
@@ -672,9 +677,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -682,14 +687,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -705,14 +710,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    }; 
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -738,9 +743,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -748,14 +753,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -771,14 +776,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    };
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -803,9 +808,9 @@ namespace Web.Models
             if (id == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -821,9 +826,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -833,9 +838,9 @@ namespace Web.Models
             }
 
             return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Success."}
-            };
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -858,9 +863,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -873,26 +878,26 @@ namespace Web.Models
             if (result.Count == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Device not registered."}
-                };
+                    {
+                        {"result","error"}, {"message", "Device not registered."}
+                    };
             }
 
             if (Math.Abs(float.Parse(result[0]["VisitorTemperature"])) <= 0.1)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","true"}
-                };
+                    {
+                        {"result","true"}
+                    };
             }
             else
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","false"}
-                };
+                    {
+                        {"result","false"}
+                    };
             }
-            
+
         }
 
         /// <summary>
@@ -916,9 +921,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -935,11 +940,11 @@ namespace Web.Models
                     return check;
                 }
             }
-            
+
             return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Success."}
-            };
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -962,9 +967,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
