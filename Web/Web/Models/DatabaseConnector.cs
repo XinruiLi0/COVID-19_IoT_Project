@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Web.Models
 {
@@ -31,6 +33,33 @@ namespace Web.Models
                     }
                     result.Add(rowNum, rowDetail);
                     rowNum++;
+                }
+            }
+            else
+            {
+                result = null;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Convert Datatable to Dictionary
+        /// </summary>
+        /// <param name="dataTable">Datatable</param>
+        /// <returns>Dictionary</returns>
+        public static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
+        {
+            ConcurrentBag<Dictionary<string, string>> result = new ConcurrentBag<Dictionary<string, string>>();
+            if (dataTable != null)
+            {
+                foreach (DataRow dataRow in dataTable.Rows)
+                {
+                    var rowDetail = new Dictionary<string, string>();
+                    foreach (DataColumn dataColumn in dataTable.Columns)
+                    {
+                        rowDetail.Add(dataColumn.ColumnName, dataRow[dataColumn].ToString());
+                    }
+                    result.Add(rowDetail);
                 }
             }
             else
@@ -149,6 +178,114 @@ namespace Web.Models
             }
 
             return DataTableToDictionary(ds.Tables[0]);
+        }
+
+        private static int deviceOwner(string deviceID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select ID from GuardDevices where DeviceID = '{deviceID}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return 0;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var result = DataTableToDictionary(ds.Tables[0]);
+
+
+            return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
+        }
+
+        private static Boolean userActivityUpdate(int userID, int guardID)
+        {
+            if (guardID <= 0)
+            {
+                return false;
+            }
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {guardID}", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
+            try
+            {
+                Parallel.ForEach(visitorList, (v) => {
+                    using (SqlConnection connection = new SqlConnection(connectionstring))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({userID}, {v["Visitor_ID"]}, {guardID}, GETDATE())", connection);
+                            adp.Fill(ds);
+                        }
+                        catch (Exception e)
+                        {
+                            throw;
+                        }
+                        finally
+                        {
+                            if (connection.State == ConnectionState.Open)
+                                connection.Close();
+                        }
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({userID}, {guardID})", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -722,7 +859,7 @@ namespace Web.Models
                 };
             }
 
-            if (int.Parse(result[0]["VisitorTemperature"]) == 0)
+            if (Math.Abs(float.Parse(result[0]["VisitorTemperature"])) <= 0.1)
             {
                 return new Dictionary<string, string>
                 {
