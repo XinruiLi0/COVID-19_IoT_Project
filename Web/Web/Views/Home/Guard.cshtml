@@ -2,107 +2,7 @@
     ViewData["Title"] = "Guard";
 *@
 
-<script type="text/javascript">
-
-    window.onload = function () {
-        var userem = getCookie("userEmail");
-        var username = getCookie("username");
-        $("#wel").html("Welcome the Guard User: " + userem);
-        $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
-
-        var device = getCookie("deviceid");
-
-        setInterval(function() {
-        $.ajax({
-            type: "POST",
-            dataType: "text",
-            url: "/Home/visitorInfoCheck",
-            data: { "deviceID": device },
-            success: function (data) {
-                var obj = JSON.parse(data);
-                var usernm = obj.UserName;
-                var updateTime = obj.LastUpdated;
-                var temp = obj.VisitorTemperature;
-                var sta = obj.UserStatus;
-                if (updateTime > 15) {
-                    $("#lastVisitor").html("Recently no visitor came in " + updateTime + " seconds!");
-                }
-                else if (updateTime > 5 && updateTime <= 15) {
-                    var sta2 = sta == "0" ? "Healthy" : "Infected";
-                    var str1 = "Last Visitor coming through this device is called " + userem;
-                    var str2 = "<br> Visitor Temperature is " + temp;
-                    var str4 = "<br> Visitor health Status is " + sta2;
-                    var str3 = "<br> Visitor already go through the device in " + updateTime + " seconds";
-                    $("#lastVisitor").html(str1 + str2 + str4 + str3);
-                }
-                else if (updateTime < 5) {
-                    var str1 = "Visitor temporaliy coming through this device is called " + userem;
-                    var str2 = "<br> Visitor Temperature is testing!";
-                    var str3 = "<br> Visitor time came through device in " + updateTime + " seconds";
-                    $("#lastVisitor").html(str1 + str2 + str4 + str3);
-                }
-
-            },
-            error: function (xhr, ts, et) {
-                alert("Error");
-            }
-        })
-        }, 3000)
-    }
-
-    function FormAjax() {
-        var userem = getCookie("userEmail");
-        var userpass = getCookie("userPassword");
-        var userrol = getCookie("userRole");
-        var vem = $("#email").val();
-        if ($("#email").val() == "") {
-            alert("You leave email empty. Please fill in the blank to search!");
-            return;
-        }
-        $.ajax({
-            type: "POST",
-            dataType: "text",
-            url: "/Home/checkVisitorStatus",
-            data: { "userEmail": userem, "userPassword": userpass, "userRole": userrol, "visitorEmail": vem },
-            success: function (data) {
-                alert(data);
-            },
-            error: function (xhr, ts, et) {
-                alert("Error");
-            }
-        })
-    }
-
-    function getCookie(c_name) {
-        if (document.cookie.length > 0) {
-            c_start = document.cookie.indexOf(c_name + "=");
-            if (c_start != -1) {
-                c_start = c_start + c_name.length + 1;
-                c_end = document.cookie.indexOf(";", c_start);
-                if (c_end == -1) {
-                    c_end = document.cookie.length;
-                }
-                return unescape(document.cookie.substring(c_start, c_end));
-            }
-        }
-        return "";
-    }
-
-    function eraseCookie(name) {
-        var date = new Date();
-        date.setTime(date.getTime() - 10000);
-        document.cookie = name + "=; expire=" + date.toGMTString() + "; path=/";
-     }
-
-    function signOut() {
-        eraseCookie("userEmail");
-        eraseCookie("userPassword");
-        eraseCookie("username");
-        window.location.href = '@Url.Action("Login", "Login")';
-    }
-
-
-</script>
+<script type="text/javascript" src="~/js/Guard.js"></script>
 
 <div>
     <h1 id="wel"> </h1>
@@ -111,21 +11,13 @@
         <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
     </div>
 
-    <h4 id="lastVisitor" class="bg-success">
+    <h4 id="lastVisitor" class="bg-danger">
     </h4>
 
-    <p class="bg-info lead text-light">
-        Use the search bar below to search a visitor's health status, input visitor's email and see the results!
-    </p>
-
-    <div class="Visitor">
-        <form>
-            <label class="form-check-label lead" for="exampleCheck1">Please input the email of a visitor: </label>
-            <input id="email" type="text" size="35" placeholder="Please input visitor's email here......" name="search">
-            <br>
-            <input class="btn btn-primary btn-lg" id="searching" onClick="FormAjax();" type="button" value="Submit">
-        </form>
-    </div>
+    <br>
+    <br>
+    <br>
+    <br>
     <br>
     <br>
     <br>
