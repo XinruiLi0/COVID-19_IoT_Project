@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
 namespace Web.Models
@@ -180,7 +179,7 @@ namespace Web.Models
             return DataTableToDictionary(ds.Tables[0]);
         }
 
-        private static int deviceOwner(string deviceID)
+        private static Dictionary<string, string> prepareActivityUpdate(string deviceID)
         {
             DataSet ds = new DataSet();
 
@@ -189,12 +188,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select ID from GuardDevices where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select ID, VisitorID from GuardDevices where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-                    return 0;
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
                 finally
                 {
@@ -205,15 +207,18 @@ namespace Web.Models
 
             var result = DataTableToDictionary(ds.Tables[0]);
 
-
-            return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Guard id or visitor id not exist."}
+                };
         }
 
-        private static Boolean userActivityUpdate(int userID, int guardID)
+        private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
         {
-            if (guardID <= 0)
+            var check = prepareActivityUpdate(deviceID);
+            if (!check["result"].Equals("success"))
             {
-                return false;
+                return check;
             }
 
             DataSet ds = new DataSet();
@@ -223,12 +228,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {guardID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {check["ID"]}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-                    return false;
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
                 finally
                 {
@@ -237,55 +245,66 @@ namespace Web.Models
                 }
             }
 
-            var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
             try
             {
-                Parallel.ForEach(visitorList, (v) => {
-                    using (SqlConnection connection = new SqlConnection(connectionstring))
-                    {
-                        try
+                Parallel.Invoke(
+                    () => {
+                        var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
+
+                        Parallel.ForEach(visitorList, (v) => {
+                            using (SqlConnection connection = new SqlConnection(connectionstring))
+                            {
+                                try
+                                {
+                                    connection.Open();
+                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE())", connection);
+                                    adp.Fill(ds);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                finally
+                                {
+                                    if (connection.State == ConnectionState.Open)
+                                        connection.Close();
+                                    }
+                            }
+                        });
+                    },
+                    () => {
+                        using (SqlConnection connection = new SqlConnection(connectionstring))
                         {
-                            connection.Open();
-                            SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({userID}, {v["Visitor_ID"]}, {guardID}, GETDATE())", connection);
-                            adp.Fill(ds);
-                        }
-                        catch (Exception e)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
-                            if (connection.State == ConnectionState.Open)
+                            try
+                            {
+                                connection.Open();
+                                SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({check["VisitorID"]}, {check["ID"]})", connection);
+                                adp.Fill(ds);
+                            }
+                            catch (Exception e)
+                            {
+                                throw e;
+                            }
+                            finally
+                            {
+                                if (connection.State == ConnectionState.Open)
                                 connection.Close();
+                            }
                         }
-                    }
-                });
+                    });
             }
             catch (Exception e)
             {
-                return false;
+                return new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", e.ToString()}
+                };
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            return new Dictionary<string, string>
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({userID}, {guardID})", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            return true;
+                {"result","success"}, {"message", "Success."}
+            };
         }
 
         /// <summary>
@@ -908,6 +927,15 @@ namespace Web.Models
                 }
             }
 
+            if (temperature + 1 <= 0.1)
+            {
+                var check = visitorActivityUpdate(deviceID);
+                if (!check["result"].Equals("success"))
+                {
+                    return check;
+                }
+            }
+            
             return new Dictionary<string, string>
             {
                 {"result","success"}, {"message", "Success."}
