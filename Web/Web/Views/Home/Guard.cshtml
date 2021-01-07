@@ -11,18 +11,31 @@
         $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
 
         var device = getCookie("deviceid");
+
+        setInterval(function() {
         $.ajax({
             type: "POST",
             dataType: "text",
             url: "/Home/visitorInfoCheck",
             data: { "deviceID": device },
             success: function (data) {
-                alert(data);
+                var obj = JSON.parse(data);
+                var usernm = obj.UserName;
+                var updateTime = obj.LastUpdated;
+                var temp = obj.VisitorTemperature;
+                var sta = obj.UserStatus;
+                var sta2 = sta == "0" ? "Healthy" : "Infected";
+                var str1 = "Last Visitor coming through this device is called " + userem;
+                var str2 = "<br> Visitor Temperature is " + temp;
+                var str4 = "<br> Visitor health Status is " + sta2;
+                var str3 = "<br> Visitor time came through device is " + updateTime;
+                $("#lastVisitor").html(str1 + str2 + str4 + str3);
             },
             error: function (xhr, ts, et) {
                 alert("Error");
             }
         })
+        }, 3000)
     }
 
     function FormAjax() {
@@ -81,13 +94,14 @@
 
 <div>
     <h1 id="wel"> </h1>
-    <h5 id="thx"> </h5>
+    <p id="thx"> </p>
     <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
         <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
     </div>
-    <p class="bg-danger lead text-light">
-        If a visitor's status shown is in dangerous(which means status number is close to 1.0), please forbid him/her to enter the public place!
-    </p>
+
+    <h4 id="lastVisitor" class="bg-success">
+    </h4>
+
     <p class="bg-info lead text-light">
         Use the search bar below to search a visitor's health status, input visitor's email and see the results!
     </p>
@@ -97,13 +111,20 @@
             <label class="form-check-label lead" for="exampleCheck1">Please input the email of a visitor: </label>
             <input id="email" type="text" size="35" placeholder="Please input visitor's email here......" name="search">
             <br>
-            <input class="btn btn-primary" id="searching" onClick="FormAjax();" type="button" value="Submit">
+            <input class="btn btn-primary btn-lg" id="searching" onClick="FormAjax();" type="button" value="Submit">
         </form>
     </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2">
+            <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="signOut()" />
 
-    <br>
-    <br>
-    <br>
-    <br>
-    <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="signOut()" />
+        </div>
+        <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2">
+            <input class="btn btn-info btn-lg" type="button" value="Back to Device List" onclick="window.history.back(); " />
+        </div>
+    </div>
 </div>
