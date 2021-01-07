@@ -43,10 +43,10 @@ namespace Web.Models
         }
 
         /// <summary>
-        /// Convert Datatable to Dictionary
+        /// Convert Datatable to Concurrent Bag
         /// </summary>
         /// <param name="dataTable">Datatable</param>
-        /// <returns>Dictionary</returns>
+        /// <returns>Concurrent Bag</returns>
         public static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
         {
             ConcurrentBag<Dictionary<string, string>> result = new ConcurrentBag<Dictionary<string, string>>();
@@ -181,6 +181,11 @@ namespace Web.Models
             return DataTableToDictionary(ds.Tables[0]);
         }
 
+        /// <summary>
+        /// Prepare necessary information for user history update.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary contain guard id and current visitor id</returns>
         private static Dictionary<string, string> prepareActivityUpdate(string deviceID)
         {
             DataSet ds = new DataSet();
@@ -215,6 +220,11 @@ namespace Web.Models
                 };
         }
 
+        /// <summary>
+        /// Get a list of current visitors in a guard place.
+        /// </summary>
+        /// <param name="guardID">Guard id</param>
+        /// <returns>A concurrent bag of visitor id.</returns>
         private static ConcurrentBag<Dictionary<string, string>> getCurrentContacts(string guardID)
         {
             DataSet ds = new DataSet();
@@ -241,6 +251,11 @@ namespace Web.Models
             return DataTableToConcurrentBag(ds.Tables[0]);
         }
 
+        /// <summary>
+        /// Add detail about the user history when user is enter a guard place.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>Return success in default.</returns>
         private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
         {
             var check = prepareActivityUpdate(deviceID);
@@ -276,7 +291,7 @@ namespace Web.Models
                                 try
                                 {
                                     connection.Open();
-                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE())", connection);
+                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE();)", connection);
                                     adp.Fill(ds);
                                 }
                                 catch (Exception e)
@@ -861,11 +876,11 @@ namespace Web.Models
         }
 
         /// <summary>
-        /// Check whether there is a visitor waiting for temperature scanning.
+        /// Update end time of vistor contact history when visitor is leaving.
         /// </summary>
         /// <param name="deviceID">Device id</param>
-        /// <returns>Return true if a visitor is waiting.</returns>
-        public static Dictionary<string, string> leavingVisitorDetect(string deviceID, string visitorEmail)
+        /// <returns>Return success in default.</returns>
+        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail)
         {
             // Get User ID
             var visitorID = getUserID(visitorEmail);
