@@ -1,3 +1,9 @@
+#
+#  IoT_thermometer.py
+#
+# Created by Yisheng Li on 2021/1/7.
+#
+
 from smbus2 import SMBus
 from mlx90614 import MLX90614
 
