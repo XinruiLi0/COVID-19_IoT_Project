@@ -1,0 +1,16 @@
+PODS:
+  - swiftScan (1.2.1)
+
+DEPENDENCIES:
+  - swiftScan
+
+SPEC REPOS:
+  trunk:
+    - swiftScan
+
+SPEC CHECKSUMS:
+  swiftScan: 0849e7d7c1c641384767a573ee8cb90b88d1ddd9
+
+PODFILE CHECKSUM: 3bc1a3c0eeb35fd247c2ab902185854e410fd524
+
+COCOAPODS: 1.10.1
