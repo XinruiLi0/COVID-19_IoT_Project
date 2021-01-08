@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
 namespace Web.Models
@@ -39,14 +38,15 @@ namespace Web.Models
             {
                 result = null;
             }
+
             return result;
         }
 
         /// <summary>
-        /// Convert Datatable to Dictionary
+        /// Convert Datatable to Concurrent Bag
         /// </summary>
         /// <param name="dataTable">Datatable</param>
-        /// <returns>Dictionary</returns>
+        /// <returns>Concurrent Bag</returns>
         public static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
         {
             ConcurrentBag<Dictionary<string, string>> result = new ConcurrentBag<Dictionary<string, string>>();
@@ -66,6 +66,7 @@ namespace Web.Models
             {
                 result = null;
             }
+
             return result;
         }
 
@@ -89,9 +90,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -161,14 +162,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    };
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -180,7 +181,12 @@ namespace Web.Models
             return DataTableToDictionary(ds.Tables[0]);
         }
 
-        private static int deviceOwner(string deviceID)
+        /// <summary>
+        /// Prepare necessary information for user history update.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>A dictionary contain guard id and current visitor id</returns>
+        private static Dictionary<string, string> prepareActivityUpdate(string deviceID)
         {
             DataSet ds = new DataSet();
 
@@ -189,12 +195,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select ID from GuardDevices where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select ID, VisitorID from GuardDevices where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-                    return 0;
+                    return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -205,17 +214,19 @@ namespace Web.Models
 
             var result = DataTableToDictionary(ds.Tables[0]);
 
-
-            return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+                {
+                    {"result","error"}, {"message", "Guard id or visitor id not exist."}
+                };
         }
 
-        private static Boolean userActivityUpdate(int userID, int guardID)
+        /// <summary>
+        /// Get a list of current visitors in a guard place.
+        /// </summary>
+        /// <param name="guardID">Guard id</param>
+        /// <returns>A concurrent bag of visitor id.</returns>
+        private static ConcurrentBag<Dictionary<string, string>> getCurrentContacts(string guardID)
         {
-            if (guardID <= 0)
-            {
-                return false;
-            }
-
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -228,7 +239,7 @@ namespace Web.Models
                 }
                 catch (Exception e)
                 {
-                    return false;
+                    throw e;
                 }
                 finally
                 {
@@ -237,55 +248,100 @@ namespace Web.Models
                 }
             }
 
-            var visitorList = DataTableToConcurrentBag(ds.Tables[0]);
+            return DataTableToConcurrentBag(ds.Tables[0]);
+        }
+
+        /// <summary>
+        /// Add detail about the user history when user is enter a guard place.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>Return success in default.</returns>
+        private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
+        {
+            var check = prepareActivityUpdate(deviceID);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            var visitorList = new ConcurrentBag<Dictionary<string, string>>();
             try
             {
-                Parallel.ForEach(visitorList, (v) => {
-                    using (SqlConnection connection = new SqlConnection(connectionstring))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({userID}, {v["Visitor_ID"]}, {guardID}, GETDATE())", connection);
-                            adp.Fill(ds);
-                        }
-                        catch (Exception e)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
-                            if (connection.State == ConnectionState.Open)
-                                connection.Close();
-                        }
-                    }
-                });
+                visitorList = getCurrentContacts(check["ID"]);
             }
             catch (Exception e)
             {
-                return false;
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({userID}, {guardID})", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                Parallel.Invoke(
+                    () =>
+                    {
+                        DataSet ds = new DataSet();
+
+                        Parallel.ForEach(visitorList, (v) =>
+                        {
+                            using (SqlConnection connection = new SqlConnection(connectionstring))
+                            {
+                                try
+                                {
+                                    connection.Open();
+                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE();)", connection);
+                                    adp.Fill(ds);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                finally
+                                {
+                                    if (connection.State == ConnectionState.Open)
+                                        connection.Close();
+                                }
+                            }
+                        });
+                    },
+                    () =>
+                    {
+                        DataSet ds = new DataSet(); 
+                        
+                        using (SqlConnection connection = new SqlConnection(connectionstring))
+                        {
+                            try
+                            {
+                                connection.Open();
+                                SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({check["VisitorID"]}, {check["ID"]})", connection);
+                                adp.Fill(ds);
+                            }
+                            catch (Exception e)
+                            {
+                                throw e;
+                            }
+                            finally
+                            {
+                                if (connection.State == ConnectionState.Open)
+                                    connection.Close();
+                            }
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
-            return true;
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -296,7 +352,7 @@ namespace Web.Models
         /// <param name="userPassword">User password</param>
         /// <param name="userRole">User role</param>
         /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
-        public static Dictionary<string,string> userRegister(string userName, string userEmail, string userPassword, int userRole)
+        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             DataSet ds = new DataSet();
 
@@ -311,9 +367,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -326,16 +382,16 @@ namespace Web.Models
             if (userEmail == null)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Unknow email."}
-                };
+                    {
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
             }
             else if (result.Count > 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account already exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
             }
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -349,9 +405,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -360,7 +416,7 @@ namespace Web.Models
                 }
             }
 
-            if (userRole == 1) 
+            if (userRole == 1)
             {
                 var id = getUserID(userEmail);
 
@@ -375,9 +431,9 @@ namespace Web.Models
                     catch (Exception e)
                     {
                         return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                            {
+                                {"result","error"}, {"message", e.ToString()}
+                            };
                     }
                     finally
                     {
@@ -388,9 +444,9 @@ namespace Web.Models
             }
 
             return new Dictionary<string, string>
-            {
-                {"result","success"}, {"message", "Success."}
-            };
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -415,9 +471,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -425,37 +481,37 @@ namespace Web.Models
                         connection.Close();
                 }
             }
-            
+
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
 
             if (userEmail == null || result.Count == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
             else if (userPassword == null || !userPassword.Equals(result[0]["UserPassword"]))
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Password incorrect."}
-                };
+                    {
+                        {"result","error"}, {"message", "Password incorrect."}
+                    };
             }
             else if (userRole != int.Parse(result[0]["UserRole"]))
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Usre didn't have permission in this role."}
-                };
+                    {
+                        {"result","error"}, {"message", "Usre didn't have permission in this role."}
+                    };
             }
             else
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","success"}, {"message", $"{result[0]["UserName"]}"}
-                };
+                    {
+                        {"result","success"}, {"message", $"{result[0]["UserName"]}"}
+                    };
             }
         }
 
@@ -487,9 +543,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -529,9 +585,9 @@ namespace Web.Models
             if (VisitorID == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -547,9 +603,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -582,9 +638,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -615,9 +671,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -625,14 +681,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             return getGuardDevices(id);
@@ -653,9 +709,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -663,14 +719,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -686,14 +742,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    }; 
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -719,9 +775,9 @@ namespace Web.Models
             if (!check["result"].Equals("success"))
             {
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, check}
-                };
+                    {
+                        {0, check}
+                    };
             }
 
             // Get User ID
@@ -729,14 +785,14 @@ namespace Web.Models
             if (id == 0)
             {
                 var temp = new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
 
                 return new Dictionary<int, Dictionary<string, string>>
-                {
-                    {0, temp}
-                };
+                    {
+                        {0, temp}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -752,14 +808,14 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     var temp = new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
 
                     return new Dictionary<int, Dictionary<string, string>>
-                    {
-                        {0, temp}
-                    };
+                        {
+                            {0, temp}
+                        };
                 }
                 finally
                 {
@@ -784,9 +840,9 @@ namespace Web.Models
             if (id == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Account not exist."}
-                };
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
             }
 
             DataSet ds = new DataSet();
@@ -802,9 +858,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -814,9 +870,116 @@ namespace Web.Models
             }
 
             return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        /// <summary>
+        /// Update end time of vistor contact history when visitor is leaving.
+        /// </summary>
+        /// <param name="deviceID">Device id</param>
+        /// <returns>Return success in default.</returns>
+        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail)
+        {
+            // Get User ID
+            var visitorID = getUserID(visitorEmail);
+            if (visitorID == 0)
             {
-                {"result","success"}, {"message", "Success."}
-            };
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
+            }
+
+            // Get Guard ID
+            var check = prepareActivityUpdate(deviceID);
+            if (!check["result"].Equals("success"))
+            {
+                return check;
+            }
+
+            var visitorList = new ConcurrentBag<Dictionary<string, string>>();
+            try
+            {
+                visitorList = getCurrentContacts(check["ID"]);
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            try
+            {
+                Parallel.Invoke(
+                    () =>
+                    {
+                        DataSet ds = new DataSet();
+
+                        Parallel.ForEach(visitorList, (v) =>
+                        {
+                            using (SqlConnection connection = new SqlConnection(connectionstring))
+                            {
+                                if (visitorID == int.Parse(v["Visitor_ID"]))
+                                    return;
+
+                                try
+                                {
+                                    connection.Open();
+                                    SqlDataAdapter adp = new SqlDataAdapter($"update PersonalContact set EndTime = GETDATE() where Guard_ID = {check["ID"]} and EndTime is null and ((ID = {check["VisitorID"]} and Contact_ID = {v["Visitor_ID"]}) or (ID = {v["Visitor_ID"]} and Contact_ID = {check["VisitorID"]}))", connection);
+                                    adp.Fill(ds);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                finally
+                                {
+                                    if (connection.State == ConnectionState.Open)
+                                        connection.Close();
+                                }
+                            }
+                        });
+                    },
+                    () =>
+                    {
+                        DataSet ds = new DataSet();
+
+                        using (SqlConnection connection = new SqlConnection(connectionstring))
+                        {
+                            try
+                            {
+                                connection.Open();
+                                SqlDataAdapter adp = new SqlDataAdapter($"delete from CurrentContact where Visitor_ID = {check["VisitorID"]} and Guard_ID = {check["ID"]}", connection);
+                                adp.Fill(ds);
+                            }
+                            catch (Exception e)
+                            {
+                                throw e;
+                            }
+                            finally
+                            {
+                                if (connection.State == ConnectionState.Open)
+                                    connection.Close();
+                            }
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -839,9 +1002,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -854,26 +1017,26 @@ namespace Web.Models
             if (result.Count == 0)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","error"}, {"message", "Device not registered."}
-                };
+                    {
+                        {"result","error"}, {"message", "Device not registered."}
+                    };
             }
 
             if (Math.Abs(float.Parse(result[0]["VisitorTemperature"])) <= 0.1)
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","true"}
-                };
+                    {
+                        {"result","true"}
+                    };
             }
             else
             {
                 return new Dictionary<string, string>
-                {
-                    {"result","false"}
-                };
+                    {
+                        {"result","false"}
+                    };
             }
-            
+
         }
 
         /// <summary>
@@ -897,9 +1060,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
@@ -908,10 +1071,19 @@ namespace Web.Models
                 }
             }
 
-            return new Dictionary<string, string>
+            if (temperature + 1 <= 0.1)
             {
-                {"result","success"}, {"message", "Success."}
-            };
+                var check = visitorActivityUpdate(deviceID);
+                if (!check["result"].Equals("success"))
+                {
+                    return check;
+                }
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
         }
 
         /// <summary>
@@ -934,9 +1106,9 @@ namespace Web.Models
                 catch (Exception e)
                 {
                     return new Dictionary<string, string>
-                    {
-                        {"result","error"}, {"message", e.ToString()}
-                    };
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
                 }
                 finally
                 {
