@@ -61,9 +61,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
+        public string checkUserStatus(string userEmail, string userPassword)
         {
-            return DatabaseConnector.checkUserStatus(userEmail, userPassword);
+            return JsonConvert.SerializeObject(DatabaseConnector.checkUserStatus(userEmail, userPassword));
         }
 
         [HttpPost]
