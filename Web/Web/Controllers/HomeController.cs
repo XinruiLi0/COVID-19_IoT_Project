@@ -55,7 +55,7 @@ namespace Web.Controllers
         }
         
         [HttpPost]
-        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
+        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, int status)
         {
             return DatabaseConnector.updatePatientStatus(userEmail, userPassword, visitorEmail, status);
         }

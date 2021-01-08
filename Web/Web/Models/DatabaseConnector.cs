@@ -571,7 +571,7 @@ namespace Web.Models
         /// <param name="visitorEmail">Visitor email</param>
         /// <param name="status">Health status</param>
         /// <returns>A dictionary contains updated health status.<</returns>
-        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
+        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, int status)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 3);
@@ -597,7 +597,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} WHERE ID = {VisitorID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} where ID = {VisitorID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -611,6 +611,55 @@ namespace Web.Models
                 {
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
+                }
+            }
+
+            if (status == 0)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionstring))
+                {
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adp = new SqlDataAdapter($"delete from ConfirmedCases where ID = {VisitorID}", connection);
+                        adp.Fill(ds);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
+                }
+            }
+            else if (status == 1)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionstring))
+                {
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adp = new SqlDataAdapter($"insert into ConfirmedCases (ID) values ({VisitorID})", connection);
+                        adp.Fill(ds);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
                 }
             }
 
