@@ -33,7 +33,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="scanButton:" destination="exE-4W-hYU" eventType="touchUpInside" id="NRs-7R-8i0"/>
+                                    <action selector="onScanNFC:" destination="exE-4W-hYU" eventType="touchUpInside" id="bCs-7a-Zke"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cUw-CZ-ltr">
@@ -44,6 +44,9 @@
                                 <state key="normal" title="Scan QR">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="onScanQR:" destination="exE-4W-hYU" eventType="touchUpInside" id="kBb-Vi-pgQ"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fbu-Tf-MaM"/>
@@ -51,12 +54,29 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Home" id="ynC-Gg-8TG"/>
                     <connections>
-                        <outlet property="NFCText" destination="GLj-5S-Lhf" id="EgV-GO-EvT"/>
+                        <outlet property="textView" destination="GLj-5S-Lhf" id="jLe-qu-Sst"/>
+                        <segue destination="7ji-st-JRa" kind="presentation" identifier="showQRscan" id="Mfu-7h-hu5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DYS-2W-aWf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-706.15384615384608" y="1392.654028436019"/>
+        </scene>
+        <!--RscanVC-->
+        <scene sceneID="PVw-hV-3ut">
+            <objects>
+                <viewController id="7ji-st-JRa" customClass="QRscanVC" customModule="IVMSP" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="OzR-1l-Eyq">
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="790"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="VtB-1o-JnT"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Vtu-9N-XOq"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EVs-V4-gaF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-706" y="2195"/>
         </scene>
         <!--LoginVC-->
         <scene sceneID="tne-QT-ifu">

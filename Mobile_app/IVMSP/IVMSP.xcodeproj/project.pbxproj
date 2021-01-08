@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4FAC09566E3A990A72729E79 /* Pods_IVMSP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E725A23E978768F00ABDE797 /* Pods_IVMSP.framework */; };
 		5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF425A14CAC0014D98F /* MapVC.swift */; };
 		5910DEF825A14CC00014D98F /* MeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5910DEF725A14CC00014D98F /* MeVC.swift */; };
+		594D31C425A7B7CD00C42229 /* QRscanVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594D31C325A7B7CD00C42229 /* QRscanVC.swift */; };
 		5952FB7925995D6800958711 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952FB7825995D6800958711 /* HomeVC.swift */; };
 		59B2299125A6B67900811EAB /* BluetoothVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B2299025A6B67900811EAB /* BluetoothVC.swift */; };
 		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
@@ -25,6 +27,7 @@
 /* Begin PBXFileReference section */
 		5910DEF425A14CAC0014D98F /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
 		5910DEF725A14CC00014D98F /* MeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeVC.swift; sourceTree = "<group>"; };
+		594D31C325A7B7CD00C42229 /* QRscanVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRscanVC.swift; sourceTree = "<group>"; };
 		5952FB7825995D6800958711 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		59B2298D25A27D6C00811EAB /* IVMSP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IVMSP.entitlements; sourceTree = "<group>"; };
 		59B2299025A6B67900811EAB /* BluetoothVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothVC.swift; sourceTree = "<group>"; };
@@ -39,6 +42,9 @@
 		59CD1269255E023900D2AE6B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		59CD126C255E023900D2AE6B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		59CD126E255E023900D2AE6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		98812D014959266FE8DB61B8 /* Pods-IVMSP.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IVMSP.debug.xcconfig"; path = "Target Support Files/Pods-IVMSP/Pods-IVMSP.debug.xcconfig"; sourceTree = "<group>"; };
+		DF44E43283A7BE26EEF66F83 /* Pods-IVMSP.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IVMSP.release.xcconfig"; path = "Target Support Files/Pods-IVMSP/Pods-IVMSP.release.xcconfig"; sourceTree = "<group>"; };
+		E725A23E978768F00ABDE797 /* Pods_IVMSP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IVMSP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,12 +52,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FAC09566E3A990A72729E79 /* Pods_IVMSP.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1FA7F8DF1C9580C131F38751 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				98812D014959266FE8DB61B8 /* Pods-IVMSP.debug.xcconfig */,
+				DF44E43283A7BE26EEF66F83 /* Pods-IVMSP.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		5952FB7725995D1500958711 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -61,6 +77,7 @@
 				5910DEF425A14CAC0014D98F /* MapVC.swift */,
 				59B2299025A6B67900811EAB /* BluetoothVC.swift */,
 				5910DEF725A14CC00014D98F /* MeVC.swift */,
+				594D31C325A7B7CD00C42229 /* QRscanVC.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -70,6 +87,8 @@
 			children = (
 				59CD125C255E023900D2AE6B /* IVMSP */,
 				59CD125B255E023900D2AE6B /* Products */,
+				1FA7F8DF1C9580C131F38751 /* Pods */,
+				AB615A160CEE9A2B0D3DFA4F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -106,6 +125,14 @@
 			path = Authentication;
 			sourceTree = "<group>";
 		};
+		AB615A160CEE9A2B0D3DFA4F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E725A23E978768F00ABDE797 /* Pods_IVMSP.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -113,9 +140,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 59CD1271255E023900D2AE6B /* Build configuration list for PBXNativeTarget "IVMSP" */;
 			buildPhases = (
+				C0CDB1FDD5920EBB6489DD34 /* [CP] Check Pods Manifest.lock */,
 				59CD1256255E023900D2AE6B /* Sources */,
 				59CD1257255E023900D2AE6B /* Frameworks */,
 				59CD1258255E023900D2AE6B /* Resources */,
+				2874BB33C57A904679703DFB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -171,6 +200,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2874BB33C57A904679703DFB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-IVMSP/Pods-IVMSP-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-IVMSP/Pods-IVMSP-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-IVMSP/Pods-IVMSP-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C0CDB1FDD5920EBB6489DD34 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IVMSP-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		59CD1256255E023900D2AE6B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -183,6 +254,7 @@
 				59CD1268255E023900D2AE6B /* IVMSP.xcdatamodeld in Sources */,
 				59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */,
 				59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */,
+				594D31C425A7B7CD00C42229 /* QRscanVC.swift in Sources */,
 				5910DEF525A14CAC0014D98F /* MapVC.swift in Sources */,
 				59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */,
 				59B2299125A6B67900811EAB /* BluetoothVC.swift in Sources */,
@@ -329,6 +401,7 @@
 		};
 		59CD1272255E023900D2AE6B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 98812D014959266FE8DB61B8 /* Pods-IVMSP.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -349,6 +422,7 @@
 		};
 		59CD1273255E023900D2AE6B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DF44E43283A7BE26EEF66F83 /* Pods-IVMSP.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

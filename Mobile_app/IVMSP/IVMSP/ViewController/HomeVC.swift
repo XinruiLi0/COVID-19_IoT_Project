@@ -10,13 +10,17 @@ import CoreNFC
 
 class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     
-    @IBOutlet var NFCText: UITextView!
-    
+    @IBOutlet  var textView: UITextView!
     
     var nfcSession: NFCTagReaderSession?
     
     var userEmail = "1181536731@qq.com"
-    var deviceID = "None"
+    var deviceID = "None"{
+        didSet{
+            
+            self.textView.text = deviceID
+        }
+    }
     
     
     
@@ -32,7 +36,11 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         self.nfcSession?.begin()
     }
     
-
+    @IBAction func onScanQR(_ sender: Any) {
+        performSegue(withIdentifier: "showQRscan", sender: sender)
+    }
+    
+    
     
     func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
         print("Session Begun")
@@ -61,7 +69,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
                 session.alertMessage = "Checked In \n\n Thank You"
                 session.invalidate()
                 DispatchQueue.main.async {
-                    self.NFCText.text = UID
+                    
                     self.deviceID = UID
                     
                     self.sendCheckInRecord(deviceID: self.deviceID, vistorEmail: self.userEmail)
