@@ -50,7 +50,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fbu-Tf-MaM"/>
-                        <color key="backgroundColor" systemColor="systemTealColor"/>
+                        <color key="backgroundColor" red="0.065721593800000006" green="0.66277986759999996" blue="0.49404960869999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Home" id="ynC-Gg-8TG"/>
                     <connections>
@@ -324,9 +324,9 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PhA-C5-rOM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="97" y="1393"/>
+            <point key="canvasLocation" x="54" y="1393"/>
         </scene>
-        <!--Item-->
+        <!--Bluetooth-->
         <scene sceneID="1d5-PA-x5f">
             <objects>
                 <viewController id="rgz-Th-nkl" customClass="BluetoothVC" customModule="IVMSP" customModuleProvider="target" sceneMemberID="viewController">
@@ -336,7 +336,7 @@
                         <viewLayoutGuide key="safeArea" id="cfu-ee-csJ"/>
                         <color key="backgroundColor" systemColor="systemRedColor"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="ZZu-rk-P6d"/>
+                    <tabBarItem key="tabBarItem" title="Bluetooth" id="ZZu-rk-P6d"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Nat-xX-vsC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -375,9 +375,6 @@
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemTealColor">
-            <color red="0.35294117647058826" green="0.78431372549019607" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

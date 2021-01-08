@@ -10,17 +10,18 @@ import CoreNFC
 
 class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     
-    @IBOutlet  var textView: UITextView!
-    
-    var nfcSession: NFCTagReaderSession?
-    
     var userEmail = "1181536731@qq.com"
-    var deviceID = "None"{
+    var deviceID = "None" {
         didSet{
-            
             self.textView.text = deviceID
         }
     }
+    
+    
+    @IBOutlet  var textView: UITextView!
+    var nfcSession: NFCTagReaderSession?
+    
+
     
     
     

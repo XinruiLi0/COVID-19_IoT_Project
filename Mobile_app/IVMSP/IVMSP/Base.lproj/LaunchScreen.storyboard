@@ -16,19 +16,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IVMSP" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8a-31-Jez">
-                                <rect key="frame" x="127" y="427" width="160" height="42"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="35"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch Screen" translatesAutoresizingMaskIntoConstraints="NO" id="jge-hQ-C5g">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="E8a-31-Jez" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="09Z-BH-Srk"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="E8a-31-Jez" secondAttribute="trailing" constant="127" id="I6R-8k-hDT"/>
-                            <constraint firstItem="E8a-31-Jez" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="127" id="jxB-nm-wBt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="jge-hQ-C5g" secondAttribute="bottom" id="LoA-1y-8kI"/>
+                            <constraint firstItem="jge-hQ-C5g" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Oaf-I6-4gg"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jge-hQ-C5g" secondAttribute="trailing" id="QIj-hz-EIq"/>
+                            <constraint firstItem="jge-hQ-C5g" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="hV8-LT-IsM"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -38,6 +36,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Launch Screen" width="858" height="858"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
