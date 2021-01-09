@@ -21,9 +21,6 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     @IBOutlet  var textView: UITextView!
     var nfcSession: NFCTagReaderSession?
     
-
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,17 +28,33 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         
     }
     
-    @IBAction func onScanNFC(_ sender: Any) {
-        self.nfcSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
-        self.nfcSession?.alertMessage = "Please Hold Near NFC Tag"
-        self.nfcSession?.begin()
+    
+    
+    @IBAction func onCheckButton(_ sender: Any) {
+        
+        let actionSheet = UIAlertController(title: "Scan", message: nil, preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "NFC Tag", style: .default, handler:{
+            action in
+            // scan by NFC tag
+            self.nfcSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
+            self.nfcSession?.alertMessage = "Please Hold Near NFC Tag"
+            self.nfcSession?.begin()
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "QR Code", style: .default, handler:{
+            action in
+            // scan by QR code
+            self.performSegue(withIdentifier: "showQRscan", sender: sender)
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(actionSheet, animated: true, completion: nil)
+        
     }
     
-    @IBAction func onScanQR(_ sender: Any) {
-        performSegue(withIdentifier: "showQRscan", sender: sender)
-    }
-    
-    
+
     
     func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
         print("Session Begun")
@@ -67,7 +80,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
             if case let .miFare(sTag) = tag {
                 let UID = sTag.identifier.map{ String(format: "%.2hhx", $0)}.joined()
                 print("UID:", UID)
-                session.alertMessage = "Checked In \n\n Thank You"
+                session.alertMessage = "Success"
                 session.invalidate()
                 DispatchQueue.main.async {
                     
