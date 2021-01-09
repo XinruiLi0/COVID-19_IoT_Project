@@ -571,7 +571,7 @@ namespace Web.Models
         /// <param name="visitorEmail">Visitor email</param>
         /// <param name="status">Health status</param>
         /// <returns>A dictionary contains updated health status.<</returns>
-        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
+        public static Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, int status)
         {
             // Check permission
             var check = userLogin(userEmail, userPassword, 3);
@@ -597,7 +597,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} WHERE ID = {VisitorID}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} where ID = {VisitorID}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -611,6 +611,55 @@ namespace Web.Models
                 {
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
+                }
+            }
+
+            if (status == 0)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionstring))
+                {
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adp = new SqlDataAdapter($"delete from ConfirmedCases where ID = {VisitorID}", connection);
+                        adp.Fill(ds);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
+                }
+            }
+            else if (status == 1)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionstring))
+                {
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adp = new SqlDataAdapter($"insert into ConfirmedCases (ID) values ({VisitorID})", connection);
+                        adp.Fill(ds);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
                 }
             }
 
@@ -623,8 +672,33 @@ namespace Web.Models
         /// <param name="userEmail">Current user email</param>
         /// <param name="userPassword">Current user password</param>
         /// <returns>A dictionary contains health status.</returns>
-        public static Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
+        public static Dictionary<int, Dictionary<string, string>> checkUserStatus(string userEmail, string userPassword)
         {
+            // Check permission
+            var check = userLogin(userEmail, userPassword, 1);
+            if (!check["result"].Equals("success"))
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, check}
+                    };
+            }
+
+            // Get User ID
+            var id = getUserID(userEmail);
+            if (id == 0)
+            {
+                var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account not exist."}
+                    };
+
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    };
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -632,15 +706,15 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{userEmail}' and UserPassword = '{userPassword}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {id}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
                 {
-                    return new Dictionary<string, string>
+                    return new Dictionary<int, Dictionary<string, string>> 
                         {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
+                            {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                        };   
                 }
                 finally
                 {
@@ -651,11 +725,59 @@ namespace Web.Models
 
             // Convert table to dictionary
             var result = DataTableToDictionary(ds.Tables[0]);
+            if (result.Count == 0)
+            {
+                result.Add(0, new Dictionary<string, string> { { "result", "error" }, { "message", "User health status not exist." } });
+                return result;
+            }
 
-            return result.Count > 0 ? result[0] : new Dictionary<string, string>
+            var history = checkContactHistory(id);
+            if (history.Count == 1 && history[0].ContainsKey("result"))
+            {
+                return history;
+            }
+
+            for (var i = 0; i < history.Count; ++i)
+            {
+                result.Add(i + 1, history[i]);
+            }
+
+            return result; 
+        }
+
+        private static Dictionary<int, Dictionary<string, string>> checkContactHistory(int ID)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
                 {
-                    {"result","error"}, {"message", "User health status not exist."}
-                };
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"delete from PersonalContact where DATEDIFF(day, EndTime, getdate()) >= 14; select [Address], StartTime, EndTime from PersonalContact join GuardInfo on PersonalContact.Guard_ID = GuardInfo.ID where PersonalContact.ID = {ID} and Contact_ID in (select ID as Contact_ID from ConfirmedCases);", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    var temp = new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+
+                    return new Dictionary<int, Dictionary<string, string>>
+                        {
+                            {0, temp}
+                        };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            // Convert table to dictionary
+            return DataTableToDictionary(ds.Tables[0]);
         }
 
         /// <summary>

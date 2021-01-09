@@ -55,15 +55,15 @@ namespace Web.Controllers
         }
         
         [HttpPost]
-        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, float status)
+        public Dictionary<string, string> updatePatientStatus(string userEmail, string userPassword, string visitorEmail, int status)
         {
             return DatabaseConnector.updatePatientStatus(userEmail, userPassword, visitorEmail, status);
         }
 
         [HttpPost]
-        public Dictionary<string, string> checkUserStatus(string userEmail, string userPassword)
+        public string checkUserStatus(string userEmail, string userPassword)
         {
-            return DatabaseConnector.checkUserStatus(userEmail, userPassword);
+            return JsonConvert.SerializeObject(DatabaseConnector.checkUserStatus(userEmail, userPassword));
         }
 
         [HttpPost]

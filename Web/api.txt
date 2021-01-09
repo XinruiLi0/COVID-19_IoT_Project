@@ -62,9 +62,18 @@ For User App & Web:
 			}
 		return data:
 			example:
+
 			{
-				"UserName": "c", 
-				"UserStatus": 0
+				0: 	{
+						"UserName": "c", 
+						"UserStatus": 0
+					},
+				1:	{	// if the user has contact history with confirmed patient
+						"Address": "d",
+						"StartTime": "e",
+						"EndTime": "f"
+					}
+
 			}
 
 	Entrance visitor detection: (Provides device info updating server to user app)
