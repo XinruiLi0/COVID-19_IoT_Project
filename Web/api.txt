@@ -95,7 +95,7 @@ For User App & Web:
 
 	Exit visitor detection: (Provides device info updating server to user app)
 		type: post
-		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorDetect
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
 		Content-Type: application/json
 		body(submit data): deviceID, visitorEmail
 			example:
