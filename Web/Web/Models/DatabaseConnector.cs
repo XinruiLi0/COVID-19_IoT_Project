@@ -1016,7 +1016,7 @@ namespace Web.Models
 
             // Get Guard ID
             var check = prepareActivityUpdate(deviceID);
-            if (!check["result"].Equals("success"))
+            if (check.ContainsKey("result"))
             {
                 return check;
             }
