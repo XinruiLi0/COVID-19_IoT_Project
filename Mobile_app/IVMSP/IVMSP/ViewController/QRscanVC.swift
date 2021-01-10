@@ -30,6 +30,7 @@ class QRscanVC: LBXScanViewController {
             if let tabBar = presentingViewController as? UITabBarController {
                 if let presenter = tabBar.viewControllers![0] as? HomeVC {
                     presenter.deviceID = msg!
+                    presenter.sendCheckRecord(deviceID: presenter.deviceID, visitorEmail: presenter.userEmail)
                 }
             }
             self.dismiss(animated: true, completion: nil)

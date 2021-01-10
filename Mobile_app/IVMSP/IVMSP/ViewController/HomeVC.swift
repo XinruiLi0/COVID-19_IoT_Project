@@ -17,8 +17,22 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         }
     }
     
+    var checkedInFlag: Bool = false {
+        didSet{
+            if checkedInFlag == true {
+                self.checkINOUTbutton.setTitle("Check Out", for: .normal)
+            } else {
+                self.checkINOUTbutton.setTitle("Check In", for: .normal)
+            }
+            
+        }
+    }
+    
     
     @IBOutlet  var textView: UITextView!
+    
+    @IBOutlet var checkINOUTbutton: UIButton!
+    
     var nfcSession: NFCTagReaderSession?
     
     
@@ -54,7 +68,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         
     }
     
-
+    
     
     func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
         print("Session Begun")
@@ -67,7 +81,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
         print("Detected NFC tag")
         
-        if tags.count > 1{
+        if tags.count > 1 {
             session.alertMessage = "More than one tag detected"
             session.invalidate()
         }
@@ -86,29 +100,38 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
                     
                     self.deviceID = UID
                     
-                    self.sendCheckInRecord(deviceID: self.deviceID, vistorEmail: self.userEmail)
+                    self.sendCheckRecord(deviceID: self.deviceID, visitorEmail: self.userEmail)
                 }
             }
         }
     }
     
     
-    func sendCheckInRecord(deviceID: String, vistorEmail: String) {
-        let parameters = ["deviceID": deviceID, "vistorEmail": vistorEmail]
+    func sendCheckRecord(deviceID: String, visitorEmail: String) {
+        var urlComps = checkedInFlag ? URLComponents(string: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate")! : URLComponents(string: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorDetect")!
         
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return }
-        var request = URLRequest(url: url)
+        
+        let queryItems = [URLQueryItem(name: "deviceID", value: deviceID), URLQueryItem(name: "visitorEmail", value: visitorEmail)]
+        urlComps.queryItems = queryItems
+        
+        print (urlComps.url!)
+        
+        var request = URLRequest(url: urlComps.url!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
-        request.httpBody = httpBody
-        
         let session = URLSession.shared
         session.dataTask(with: request) { (data, response, error) in
             
             if let data = data {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    
+                    // if success
+                    DispatchQueue.main.async {
+                        self.checkedInFlag.toggle()
+                    }
+                    // else alert failed
+                    
                     print(json)
                 } catch {
                     print(error)

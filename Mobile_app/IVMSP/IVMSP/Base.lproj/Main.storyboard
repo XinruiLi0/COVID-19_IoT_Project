@@ -19,7 +19,7 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="GLj-5S-Lhf">
                                 <rect key="frame" x="75" y="196" width="240" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -30,8 +30,8 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="Upw-uT-7xG"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Button">
+                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <state key="normal" title="Check In">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
@@ -49,6 +49,7 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Home" id="ynC-Gg-8TG"/>
                     <connections>
+                        <outlet property="checkINOUTbutton" destination="dU1-JR-bgz" id="np0-6l-YgS"/>
                         <outlet property="textView" destination="GLj-5S-Lhf" id="jLe-qu-Sst"/>
                         <segue destination="7ji-st-JRa" kind="presentation" identifier="showQRscan" id="Mfu-7h-hu5"/>
                     </connections>
