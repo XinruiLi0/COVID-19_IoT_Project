@@ -55,6 +55,37 @@ window.onload = function () {
     });
 }
 
+function update() {
+    var getUserEmail = getCookie("userEmail");
+    var getUserPassword = getCookie("userPassword");
+
+    if ($('#searchBox').val() != '') {
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: "/Home/checkPatientStatus",
+            data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": $('#searchBox').val() },
+            success: function (data) {
+                userName = JSON.parse(data).UserName;
+                userEmail = JSON.parse(data).UserEmail;
+                userStatus = JSON.parse(data).UserStatus;
+                $('#vistorName').html(userName);
+                $('#vistorEmail').html(userEmail);
+                if (userStatus == "0") {
+                    $('#vistorHealthStatus').html("Healthy");
+                } else if (userStatus == "1") {
+                    $('#vistorHealthStatus').html("Infected");
+                }
+            }
+        });
+
+    } else {
+        $('#vistorName').html("");
+        $('#vistorEmail').html("");
+        $('#vistorHealthStatus').html("");
+    }
+}
+
 function healthy() {
     var getUserEmail = getCookie("userEmail");
     var getUserPassword = getCookie("userPassword");
@@ -66,6 +97,7 @@ function healthy() {
             data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": userEmail, "status": 0 },
             success: function (data) {
                 alert(data);
+                update();
             }
         });
     }
@@ -82,6 +114,7 @@ function infected() {
             data: { "userEmail": getUserEmail, "userPassword": getUserPassword, "visitorEmail": userEmail, "status": 1 },
             success: function (data) {
                 alert(data);
+                update();
             }
         });
     }
