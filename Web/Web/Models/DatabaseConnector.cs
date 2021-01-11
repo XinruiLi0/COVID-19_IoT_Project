@@ -1075,7 +1075,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime, ManualUpdate from PersonalContact where ID = {visitorID}, Guard_ID = {GuardInfo["ID"]} order by StartTime desc;", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime, ManualUpdate from PersonalContact where ID = {visitorID} and Guard_ID = {GuardInfo["ID"]} order by StartTime desc;", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
