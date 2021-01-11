@@ -97,11 +97,12 @@ For User App & Web:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
 		Content-Type: application/json
-		body(submit data): deviceID, visitorEmail
+		body(submit data): deviceID, visitorEmail, isMaunalUpdate
 			example:
 			{
 				"deviceID": "a",
-				"visitorEmail": "b"
+				"visitorEmail": "b",
+				"isMaunalUpdate": 0
 			}
 		return data:
 			example:

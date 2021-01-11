@@ -91,9 +91,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail)
+        public Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate)
         {
-            return DatabaseConnector.leavingVisitorUpdate(deviceID, visitorEmail);
+            return DatabaseConnector.leavingVisitorUpdate(deviceID, visitorEmail, isMaunalUpdate);
         }
 
         [HttpPost]

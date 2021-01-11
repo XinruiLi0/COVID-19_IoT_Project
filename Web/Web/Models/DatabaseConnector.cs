@@ -291,7 +291,7 @@ namespace Web.Models
                                 try
                                 {
                                     connection.Open();
-                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE();)", connection);
+                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(), 0); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE(), 0);", connection);
                                     adp.Fill(ds);
                                 }
                                 catch (Exception e)
@@ -958,8 +958,8 @@ namespace Web.Models
         public static Dictionary<string, string> visitorDetect(string deviceID, string visitorEmail)
         {
             // Get User ID
-            var id = getUserID(visitorEmail);
-            if (id == 0)
+            var visitorID = getUserID(visitorEmail);
+            if (visitorID == 0)
             {
                 return new Dictionary<string, string>
                     {
@@ -974,7 +974,41 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorID = {id}, VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime from PersonalContact where ID = {visitorID} and EndTime is not null order by StartTime desc;", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var check = DataTableToDictionary(ds.Tables[0]);
+
+            if (check.Count != 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "User has not record for last exit activity."}
+                    };
+            }
+
+            ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorID = {visitorID}, VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -1002,7 +1036,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="deviceID">Device id</param>
         /// <returns>Return success in default.</returns>
-        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail)
+        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate)
         {
             // Get User ID
             var visitorID = getUserID(visitorEmail);
@@ -1015,22 +1049,63 @@ namespace Web.Models
             }
 
             // Get Guard ID
-            var check = prepareActivityUpdate(deviceID);
-            if (check.ContainsKey("result"))
+            var GuardInfo = prepareActivityUpdate(deviceID);
+            if (GuardInfo.ContainsKey("result"))
             {
-                return check;
+                return GuardInfo;
             }
 
             var visitorList = new ConcurrentBag<Dictionary<string, string>>();
             try
             {
-                visitorList = getCurrentContacts(check["ID"]);
+                visitorList = getCurrentContacts(GuardInfo["ID"]);
             }
             catch (Exception e)
             {
                 return new Dictionary<string, string>
                     {
                         {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime, ManualUpdate from PersonalContact where ID = {visitorID}, Guard_ID = {GuardInfo["ID"]} order by StartTime desc;", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var check = DataTableToDictionary(ds.Tables[0]);
+
+            if (check.Count == 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "User has no entry activity record."}
+                    };
+            }
+            else if (isMaunalUpdate == 1 && check[0]["EndTime"] != null)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Duplicate manual record received."}
                     };
             }
 
@@ -1051,7 +1126,7 @@ namespace Web.Models
                                 try
                                 {
                                     connection.Open();
-                                    SqlDataAdapter adp = new SqlDataAdapter($"update PersonalContact set EndTime = GETDATE() where Guard_ID = {check["ID"]} and EndTime is null and ((ID = {check["VisitorID"]} and Contact_ID = {v["Visitor_ID"]}) or (ID = {v["Visitor_ID"]} and Contact_ID = {check["VisitorID"]}))", connection);
+                                    SqlDataAdapter adp = new SqlDataAdapter($"update PersonalContact set EndTime = GETDATE(), ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))", connection);
                                     adp.Fill(ds);
                                 }
                                 catch (Exception e)
@@ -1075,7 +1150,7 @@ namespace Web.Models
                             try
                             {
                                 connection.Open();
-                                SqlDataAdapter adp = new SqlDataAdapter($"delete from CurrentContact where Visitor_ID = {check["VisitorID"]} and Guard_ID = {check["ID"]}", connection);
+                                SqlDataAdapter adp = new SqlDataAdapter($"delete from CurrentContact where Visitor_ID = {GuardInfo["VisitorID"]} and Guard_ID = {GuardInfo["ID"]}", connection);
                                 adp.Fill(ds);
                             }
                             catch (Exception e)
