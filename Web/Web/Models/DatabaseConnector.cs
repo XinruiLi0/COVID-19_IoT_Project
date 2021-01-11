@@ -259,7 +259,7 @@ namespace Web.Models
         private static Dictionary<string, string> visitorActivityUpdate(string deviceID)
         {
             var check = prepareActivityUpdate(deviceID);
-            if (!check["result"].Equals("success"))
+            if (check.ContainsKey("result"))
             {
                 return check;
             }
@@ -1068,6 +1068,23 @@ namespace Web.Models
                     };
             }
 
+            var isInside = false;
+            foreach(Dictionary<string, string> v in visitorList)
+            {
+                if (int.Parse(v["Visitor_ID"]) == visitorID)
+                {
+                    isInside = true;
+                }
+            }
+
+            if (!isInside)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "User has no entry activity record."}
+                    };
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -1094,7 +1111,7 @@ namespace Web.Models
 
             var check = DataTableToDictionary(ds.Tables[0]);
 
-            if (check.Count == 0)
+            if (check.Count == 0 && visitorList.Count != 1)
             {
                 return new Dictionary<string, string>
                     {
@@ -1268,7 +1285,7 @@ namespace Web.Models
                 }
             }
 
-            if (temperature + 1 <= 0.1)
+            if (temperature + 1 >= 0.1)
             {
                 var check = visitorActivityUpdate(deviceID);
                 if (!check["result"].Equals("success"))
