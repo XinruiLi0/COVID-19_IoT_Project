@@ -836,9 +836,9 @@ namespace Web.Models
                     };
             }
 
-            // Get User ID
-            var id = getUserID(userEmail);
-            if (id == 0)
+            // Get Guard ID
+            var guardID = getUserID(userEmail);
+            if (guardID == 0)
             {
                 var temp = new Dictionary<string, string>
                     {
@@ -858,7 +858,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description, VisitorEmail, VisitorTemperature, LastUpdated) values ({id}, '{deviceID}', '{deviceDescription}', 'U1@test', 37, GETDATE()); ", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description, VisitorID, VisitorTemperature, LastUpdated) values ({guardID}, '{deviceID}', '{deviceDescription}', 1, 37, GETDATE()); ", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
@@ -880,7 +880,7 @@ namespace Web.Models
                 }
             }
 
-            return getGuardDevices(id);
+            return getGuardDevices(guardID);
         }
 
         /// <summary>
