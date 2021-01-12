@@ -967,6 +967,43 @@ namespace Web.Models
                     };
             }
 
+            // Get Guard ID
+            var GuardInfo = prepareActivityUpdate(deviceID);
+            if (GuardInfo.ContainsKey("result"))
+            {
+                return GuardInfo;
+            }
+
+            var visitorList = new ConcurrentBag<Dictionary<string, string>>();
+            try
+            {
+                visitorList = getCurrentContacts(GuardInfo["ID"]);
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            var isInside = false;
+            foreach (Dictionary<string, string> v in visitorList)
+            {
+                if (int.Parse(v["Visitor_ID"]) == visitorID)
+                {
+                    isInside = true;
+                }
+            }
+
+            if (isInside)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Duplicate record received."}
+                    };
+            }
+
             DataSet ds = new DataSet();
 
             using (SqlConnection connection = new SqlConnection(connectionstring))
@@ -1122,7 +1159,7 @@ namespace Web.Models
             {
                 return new Dictionary<string, string>
                     {
-                        {"result","error"}, {"message", "Duplicate manual record received."}
+                        {"result","error"}, {"message", "Duplicate manual exit record received."}
                     };
             }
 
