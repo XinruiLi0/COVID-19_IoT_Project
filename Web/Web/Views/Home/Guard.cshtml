@@ -1,0 +1,34 @@
+﻿@*
+    ViewData["Title"] = "Guard";
+*@
+
+<script type="text/javascript" src="~/js/Guard.js"></script>
+
+<div>
+    <h1 id="wel"> </h1>
+    <p id="thx"> </p>
+    <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
+        <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
+    </div>
+
+    <h4 id="lastVisitor" class="bg-danger">
+    </h4>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2">
+            <input class="btn btn-success btn-lg" type="button" value="Sign Out" onclick="signOut()" />
+
+        </div>
+        <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2">
+            <input class="btn btn-info btn-lg" type="button" value="Back to Device List" onclick="window.history.back(); " />
+        </div>
+    </div>
+</div>

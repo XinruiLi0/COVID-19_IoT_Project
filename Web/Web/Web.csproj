@@ -1,7 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\UserPage\**" />
+    <Content Remove="Views\UserPage\**" />
+    <EmbeddedResource Remove="Views\UserPage\**" />
+    <None Remove="Views\UserPage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	<PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+  </ItemGroup>
 
 </Project>

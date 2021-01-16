@@ -1,0 +1,6 @@
+framework module Pods_IVMSP {
+  umbrella header "Pods-IVMSP-umbrella.h"
+
+  export *
+  module * { export * }
+}
