@@ -33,12 +33,17 @@
                 url: "/Home/checkUserStatus",
                 data: { "userEmail": getUserEmail, "userPassword": getUserPassword },
                 success: function (data) {
-                    userName = JSON.parse(data).UserName;
-                    userStatus = JSON.parse(data).UserStatus;
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    var status;
+                    for (var i = 0; i < Object.keys(obj).length; i++) {
+                        status = obj[i].UserStatus;
+                    }
+
                     $('#vistorName').html(userName);
-                    if (userStatus == "0") {
+                    if (status == "0") {
                         $('#vistorHealthStatus').html("Healthy");
-                    } else if (userStatus == "1") {
+                    } else if (status == "1") {
                         $('#vistorHealthStatus').html("Infected");
                     }
 
