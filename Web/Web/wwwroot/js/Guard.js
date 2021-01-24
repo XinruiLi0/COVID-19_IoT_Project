@@ -4,7 +4,7 @@ window.onload = function () {
     var username = getCookie("username");
     $("#wel").html("Welcome the Guard User: " + userem);
     $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
-
+    getLocation();
     var device = getCookie("deviceid");
 
     setInterval(function () {
@@ -73,4 +73,17 @@ function signOut() {
     eraseCookie("userPassword");
     eraseCookie("username");
     window.location.href = '/Login/Login';
+}
+
+function getLocation() {
+    var x = document.getElementById("demo");
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    else { x.innerHTML = "Geolocation is not supported by this browser."; }
+}
+function showPosition(position) {
+    var x = document.getElementById("demo");
+    x.innerHTML = "Latitude: " + position.coords.latitude +
+        "<br />Longitude: " + position.coords.longitude;
 }

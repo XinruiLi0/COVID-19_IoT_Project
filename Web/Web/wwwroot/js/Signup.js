@@ -94,3 +94,19 @@ function UserAjax() {
         }
     })
 };
+
+function getLocation() {
+    var x;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    else { x = "Geolocation is not supported by this browser."; }
+
+    return x;
+}
+
+function showPosition(position) {
+    var pos = new Array(position.coords.latitude, position.coords.longitude);
+    alert(pos);
+    GuardAjax();
+}
