@@ -155,7 +155,7 @@ namespace Web.Models
                 }
                 catch (Exception e)
                 {
-                    return 0;
+                    return -1;
                 }
                 finally
                 {
@@ -376,35 +376,13 @@ namespace Web.Models
         /// <param name="userName">User name</param>
         /// <param name="userEmail">User email</param>
         /// <param name="userPassword">User password</param>
-        /// <param name="userRole">User role</param>
+        /// <param name="age">User age</param>
+        /// <param name="hasInfectedBefore">Whether user being infected before</param>
         /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
-        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
+        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore)
         {
-            DataSet ds = new DataSet();
+            var check = getUserID(userEmail);
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{userEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            var result = DataTableToDictionary(ds.Tables[0]);
             if (userEmail == null)
             {
                 return new Dictionary<string, string>
@@ -412,7 +390,7 @@ namespace Web.Models
                         {"result","error"}, {"message", "Unknow email."}
                     };
             }
-            else if (result.Count > 0)
+            else if (check != 0)
             {
                 return new Dictionary<string, string>
                     {
@@ -420,53 +398,18 @@ namespace Web.Models
                     };
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}')", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            if (userRole == 1)
-            {
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '1')");
                 var id = getUserID(userEmail);
-
-                using (SqlConnection connection = new SqlConnection(connectionstring))
-                {
-                    try
+                executeQuery($"insert into HealthStatus (ID, Age, HasInfectedBefore, UserStatus) values ({id}, {age}, {hasInfectedBefore}, 0)");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
                     {
-                        connection.Open();
-                        SqlDataAdapter adp = new SqlDataAdapter($"insert into HealthStatus (ID, UserStatus) values ({id}, 0)", connection);
-                        adp.Fill(ds);
-                    }
-                    catch (Exception e)
-                    {
-                        return new Dictionary<string, string>
-                            {
-                                {"result","error"}, {"message", e.ToString()}
-                            };
-                    }
-                    finally
-                    {
-                        if (connection.State == ConnectionState.Open)
-                            connection.Close();
-                    }
-                }
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>
@@ -475,33 +418,20 @@ namespace Web.Models
                 };
         }
 
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="guardName">Guard name</param>
+        /// <param name="guardEmail">Guard email</param>
+        /// <param name="guardPassword">Guard password</param>
+        /// <param name="address">Address</param>
+        /// <param name="latitude">Latitude</param>
+        /// <param name="longitude">Longitude</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
         public static Dictionary<string, string> guardRegister(string guardName, string guardEmail, string guardPassword, string address, float latitude, float longitude)
         {
-            DataSet ds = new DataSet();
+            var check = getUserID(guardEmail);
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{guardEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            var result = DataTableToDictionary(ds.Tables[0]);
             if (guardEmail == null)
             {
                 return new Dictionary<string, string>
@@ -509,7 +439,7 @@ namespace Web.Models
                         {"result","error"}, {"message", "Unknow email."}
                     };
             }
-            else if (result.Count > 0)
+            else if (check != 0)
             {
                 return new Dictionary<string, string>
                     {
@@ -529,6 +459,50 @@ namespace Web.Models
                         {
                             {"result","error"}, {"message", e.ToString()}
                         };
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="doctorName">Doctor name</param>
+        /// <param name="doctorEmail">Doctor email</param>
+        /// <param name="doctorPassword">Doctor password</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
+        public static Dictionary<string, string> doctorRegister(string doctorName, string doctorEmail, string doctorPassword)
+        {
+            var check = getUserID(doctorEmail);
+
+            if (doctorEmail == null)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
+            }
+            else if (check != 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
+            }
+
+            try
+            {
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{doctorName}', '{doctorEmail}', '{doctorPassword}', '3')");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>

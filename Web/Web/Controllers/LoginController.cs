@@ -25,15 +25,21 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore)
+        {
+            return DatabaseConnector.userRegister(userName, userEmail, userPassword, age, hasInfectedBefore);
+        }
+
+        [HttpPost]
         public Dictionary<string, string> guardRegister(string guardName, string guardEmail, string guardPassword, string address, float latitude, float longitude)
         {
             return DatabaseConnector.guardRegister(guardName, guardEmail, guardPassword, address, latitude, longitude);
         }
 
         [HttpPost]
-        public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
+        public Dictionary<string, string> doctorRegister(string userName, string userEmail, string userPassword)
         {
-            return DatabaseConnector.userRegister(userName, userEmail, userPassword, userRole);
+            return DatabaseConnector.doctorRegister(userName, userEmail, userPassword);
         }
     }
 }
