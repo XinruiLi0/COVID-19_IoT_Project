@@ -47,7 +47,7 @@
                             <constraint firstItem="fbu-Tf-MaM" firstAttribute="trailing" secondItem="dU1-JR-bgz" secondAttribute="trailing" constant="30" id="lOW-C6-jrE"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Home" id="ynC-Gg-8TG"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="homekit" catalog="system" id="ynC-Gg-8TG"/>
                     <connections>
                         <outlet property="checkINOUTbutton" destination="dU1-JR-bgz" id="np0-6l-YgS"/>
                         <outlet property="textView" destination="GLj-5S-Lhf" id="jLe-qu-Sst"/>
@@ -313,10 +313,24 @@
                     <view key="view" contentMode="scaleToFill" id="eAO-iO-1KB">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="jl9-OH-N1H">
+                                <rect key="frame" x="0.0" y="0.0" width="390" height="761"/>
+                            </mapView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="crL-ey-9d5"/>
-                        <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="jl9-OH-N1H" firstAttribute="top" secondItem="eAO-iO-1KB" secondAttribute="top" id="4Bt-9U-tZs"/>
+                            <constraint firstItem="crL-ey-9d5" firstAttribute="trailing" secondItem="jl9-OH-N1H" secondAttribute="trailing" id="FrH-oG-isE"/>
+                            <constraint firstItem="jl9-OH-N1H" firstAttribute="leading" secondItem="crL-ey-9d5" secondAttribute="leading" id="Rif-YC-FZ9"/>
+                            <constraint firstItem="crL-ey-9d5" firstAttribute="bottom" secondItem="jl9-OH-N1H" secondAttribute="bottom" id="SUV-db-n8p"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" id="3ub-Yk-34K"/>
+                    <tabBarItem key="tabBarItem" title="Map" image="map" catalog="system" id="3ub-Yk-34K"/>
+                    <connections>
+                        <outlet property="mapView" destination="jl9-OH-N1H" id="KPg-bq-XV3"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PhA-C5-rOM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -329,14 +343,56 @@
                     <view key="view" contentMode="scaleToFill" id="c08-l9-dFM">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="hS1-TH-RAy">
+                                <rect key="frame" x="0.0" y="44" width="390" height="717"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="dFI-Qk-hCb" customClass="selfSizingTableViewCell" customModule="IVMSP" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="390" height="22.333333969116211"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dFI-Qk-hCb" id="3WL-ao-TUA">
+                                            <rect key="frame" x="0.0" y="0.0" width="390" height="22.333333969116211"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LOT-gb-DYx">
+                                                    <rect key="frame" x="20" y="11" width="350" height="0.33333333333333393"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="LOT-gb-DYx" firstAttribute="leading" secondItem="3WL-ao-TUA" secondAttribute="leadingMargin" id="BhW-qw-e1o"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="LOT-gb-DYx" secondAttribute="trailing" id="E3e-ke-WNI"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="LOT-gb-DYx" secondAttribute="bottom" id="g79-aQ-T4d"/>
+                                                <constraint firstItem="LOT-gb-DYx" firstAttribute="top" secondItem="3WL-ao-TUA" secondAttribute="topMargin" id="j9q-zf-u5V"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="cellText" destination="LOT-gb-DYx" id="D0I-k4-UQM"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="cfu-ee-csJ"/>
-                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="hS1-TH-RAy" firstAttribute="top" secondItem="cfu-ee-csJ" secondAttribute="top" id="4rg-Yl-Hfe"/>
+                            <constraint firstItem="cfu-ee-csJ" firstAttribute="bottom" secondItem="hS1-TH-RAy" secondAttribute="bottom" id="XxY-Yp-xhp"/>
+                            <constraint firstItem="cfu-ee-csJ" firstAttribute="trailing" secondItem="hS1-TH-RAy" secondAttribute="trailing" id="YGw-Sn-A6T"/>
+                            <constraint firstItem="hS1-TH-RAy" firstAttribute="leading" secondItem="cfu-ee-csJ" secondAttribute="leading" id="phH-Eh-77C"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Bluetooth" id="ZZu-rk-P6d"/>
+                    <tabBarItem key="tabBarItem" title="Bluetooth" image="iphone.homebutton.radiowaves.left.and.right" catalog="system" id="ZZu-rk-P6d"/>
+                    <connections>
+                        <outlet property="tableView" destination="hS1-TH-RAy" id="liA-9r-Abe"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Nat-xX-vsC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="742" y="1393"/>
+            <point key="canvasLocation" x="741.53846153846155" y="1392.654028436019"/>
         </scene>
         <!--Me-->
         <scene sceneID="FKN-Np-5R8">
@@ -346,9 +402,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="QmL-6W-IDP"/>
-                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Me" id="jOR-cc-44Z"/>
+                    <tabBarItem key="tabBarItem" title="Me" image="person.crop.circle.fill" catalog="system" id="jOR-cc-44Z"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9OA-ho-7nC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -357,20 +413,15 @@
     </scenes>
     <resources>
         <image name="header" width="1024" height="538"/>
+        <image name="homekit" catalog="system" width="128" height="106"/>
+        <image name="iphone.homebutton.radiowaves.left.and.right" catalog="system" width="128" height="86"/>
+        <image name="map" catalog="system" width="128" height="110"/>
+        <image name="person.crop.circle.fill" catalog="system" width="128" height="121"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
