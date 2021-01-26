@@ -25,6 +25,12 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        public Dictionary<string, string> guardRegister(string guardName, string guardEmail, string guardPassword, string address, float latitude, float longitude)
+        {
+            return DatabaseConnector.guardRegister(guardName, guardEmail, guardPassword, address, latitude, longitude);
+        }
+
+        [HttpPost]
         public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
         {
             return DatabaseConnector.userRegister(userName, userEmail, userPassword, userRole);

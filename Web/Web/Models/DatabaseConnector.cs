@@ -12,12 +12,38 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
+        private static DataTable executeQuery(string query)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter(query, connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return ds.Tables[0];
+        }
+
         /// <summary>
         /// Convert Datatable to Dictionary
         /// </summary>
         /// <param name="dataTable">Datatable</param>
         /// <returns>Dictionary</returns>
-        public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
+        private static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
         {
             Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
             if (dataTable != null)
@@ -47,7 +73,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="dataTable">Datatable</param>
         /// <returns>Concurrent Bag</returns>
-        public static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
+        private static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
         {
             ConcurrentBag<Dictionary<string, string>> result = new ConcurrentBag<Dictionary<string, string>>();
             if (dataTable != null)
@@ -441,6 +467,68 @@ namespace Web.Models
                             connection.Close();
                     }
                 }
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        public static Dictionary<string, string> guardRegister(string guardName, string guardEmail, string guardPassword, string address, float latitude, float longitude)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{guardEmail}'", connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            var result = DataTableToDictionary(ds.Tables[0]);
+            if (guardEmail == null)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
+            }
+            else if (result.Count > 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
+            }
+
+            try
+            {
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{guardName}', '{guardEmail}', '{guardPassword}', '2')");
+                var id = getUserID(guardEmail);
+                executeQuery($"insert into GuardInfo (ID, Address, Latitude, Longitude) values ('{id}', '{address}', '{latitude}', '{longitude}')");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                        {
+                            {"result","error"}, {"message", e.ToString()}
+                        };
             }
 
             return new Dictionary<string, string>

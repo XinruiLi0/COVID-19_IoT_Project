@@ -30,6 +30,27 @@ For Account initialize:
 				"result":"success", 
 				"message": "Success."
 			}
+
+	Guard Register: (Provides the register server to guard)
+		type: post
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
+		Content-Type: application/json
+		body(submit data): userName, userEmail, userPassword, address, latitude, longitude
+			example:
+			{
+				"userName": "a"
+				"userEmail": "b", 
+				"userPassword": "c", 
+				"address": "d",
+				latitude: -1.1234567,
+				longitude: 1.1234567
+			}
+		return data:
+			example:
+			{
+				"result":"success", 
+				"message": "Success."
+			}
 	
 	User Login: (Provides login to user, guard, and doctor)
 		type: post
