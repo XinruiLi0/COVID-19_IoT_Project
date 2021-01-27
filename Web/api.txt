@@ -16,13 +16,53 @@ For Account initialize:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 		Content-Type: application/json
-		body(submit data): userName, userEmail, userPassword, userRole
+		body(submit data): userName, userEmail, userPassword, age, hasInfectedBefore
 			example:
 			{
 				"userName": "a"
 				"userEmail": "b", 
 				"userPassword": "c", 
-				"userRole": 1
+				"age": 24,
+				"hasInfectedBefore": 0  // 0 for not infected, 1 for infected before
+			}
+		return data:
+			example:
+			{
+				"result":"success", 
+				"message": "Success."
+			}
+
+	Guard Register: (Provides the register server to guard)
+		type: post
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/guardLogin
+		Content-Type: application/json
+		body(submit data): userName, userEmail, userPassword, address, latitude, longitude
+			example:
+			{
+				"userName": "a"
+				"userEmail": "b", 
+				"userPassword": "c", 
+				"address": "d",
+				latitude: -1.1234567,
+				longitude: 1.1234567
+			}
+		return data:
+			example:
+			{
+				"result":"success", 
+				"message": "Success."
+			}
+
+	Doctor Register: (Provides the register server to doctor)
+		type: post
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/doctorLogin
+		Content-Type: application/json
+		body(submit data): userName, userEmail, userPassword
+			example:
+			{
+				"userName": "a"
+				"userEmail": "b", 
+				"userPassword": "c"
 			}
 		return data:
 			example:

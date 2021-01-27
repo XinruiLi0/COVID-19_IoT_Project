@@ -2,7 +2,7 @@
     ViewData["Title"] = "Login";
 
 }
-
+ 
     <style>
         .col-center-block {
             float: none;
@@ -12,23 +12,24 @@
         }
     </style>
 
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="~/js/Signup.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgZRo9ftId6TgUwSxWfEfXvTLVEtSqj7Y&sensor=false"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/Signup.js"></script>
 
 <div>
     <h1 class="text-primary col-xs-6 col-lg-6 col-md-6 col-sm-6 offset-3"> Choose Account Type </h1>
 
     <div class="row">
         <div class="col-xs-3 col-lg-3 col-md-3 col-sm-3 offset-1" style="position:relative;">
-            <img class="img-responsive" src="~/doctor.jpg" alt="doctors" style="width:100%; height:100%">
+            <img class="img-responsive" src="~/lib/content/doctor.jpg" alt="doctors" style="width:100%; height:100%">
             <input class="btn btn-success" type="button" value="Doctor" style="width:50%; left:25%; bottom:-1%; position: absolute;">
         </div>
         <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3" style="position:relative;">
-            <img class="img-responsive" src="~/user.png" alt="users" style="width:100%; height:100%">
+            <img class="img-responsive" src="~/lib/content/user.png" alt="users" style="width:100%; height:100%">
             <input class="btn btn-primary" type="button" value="User" style="width:50%; left:25%; bottom:-1%; position: absolute;">
         </div>
         <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3 " style="position:relative;">
-            <img class="img-responsive" src="~/guard.png" alt="users" style="width:100%; height:100%">
+            <img class="img-responsive" src="~/lib/content/guard.png" alt="users" style="width:100%; height:100%">
             <input class="btn btn-warning" type="button" value="Guard" style="width:50%; left:25%; bottom:-1%; position: absolute;">
         </div>
 
@@ -78,13 +79,13 @@
             <legend align="center" class="text-primary">Sign up for Guard</legend>
 
             <div class="form-group">
-                <label> Full Name: </label>
-                <input class="form-control" id="gname" type="text" name="Full Name" placeholder="Enter Your Full Name" />
+                <label> Facility Name: </label>
+                <input class="form-control" id="gname" type="text" name="Full Name" placeholder="Enter Facility Name(school,hospital for example)" />
             </div>
 
             <div class="form-group">
-                <label> Building No: </label>
-                <input class="form-control" type="text" name="Building" placeholder="Enter the building No that you in charge of " />
+                <label> Building Address: </label>
+                <input class="form-control" id ="Address" type="text" name="Building" placeholder="Enter the building Address that you in charge of " />
             </div>
             <div class="form-group">
                 <label>Email address: </label>
@@ -114,7 +115,17 @@
                 <label> Full Name: </label>
                 <input class="form-control" id="uname" type="text" name="Full Name" placeholder="Enter Your Full Name" />
             </div>
-
+            <div class="form-group">
+                <label> Age: </label>
+                <input class="form-control" type="text" id="age" placeholder="Input your present age" />
+            </div>
+            <div class="form-group form-check">
+                <input type="radio" class="form-check-input" name="role" id="radio1">
+                <label class="form-check-label" for="exampleCheck1"> Never infected before</label>
+                &nbsp; &nbsp; &nbsp;
+                <input type="radio" class="form-check-input" name="role" id="radio2">
+                <label class="form-check-label" for="exampleCheck1"> Ever infected by COVID-19 before.</label>
+            </div>
             <div class="form-group">
                 <label> Passport No: </label>
                 <input class="form-control" type="text" name="Passport" placeholder="Enter Your Passport No" />
@@ -132,7 +143,7 @@
                 <input class="form-control" type="password" id="conpassword3" placeholder="Confirm your password" />
             </div>
 
-            <input id="user" onClick="UserAjax();"type="button" name="Submit Register Form" value="Submit Register Form" class="btn btn-success">
+            <input id="user" onClick="UserAjax();" type="button" name="Submit Register Form" value="Submit Register Form" class="btn btn-success">
         </fieldset>
     </form>
 </div>
