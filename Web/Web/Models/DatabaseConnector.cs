@@ -12,6 +12,11 @@ namespace Web.Models
     {
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
+        /// <summary>
+        /// Execute sql query
+        /// </summary>
+        /// <param name="query">SQL query</param>
+        /// <returns></returns>
         private static DataTable executeQuery(string query)
         {
             DataSet ds = new DataSet();
@@ -35,7 +40,7 @@ namespace Web.Models
                 }
             }
 
-            return ds.Tables[0];
+            return ds.Tables.Count == 0 ? null : ds.Tables[0];
         }
 
         /// <summary>
