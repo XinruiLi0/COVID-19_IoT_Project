@@ -773,7 +773,7 @@ namespace Web.Models
                 try
                 {
                     connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {id}", connection);
+                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserStatus, Predict from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {id}", connection);
                     adp.Fill(ds);
                 }
                 catch (Exception e)
