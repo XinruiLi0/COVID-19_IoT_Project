@@ -120,8 +120,6 @@ namespace Web.Models
                         {"result","error"}, {"message", e.ToString()}
                     };
             }
-
-            // Convert table to dictionary
            
             return result.Count > 0 ? result[0] : new Dictionary<string, string>
                 {
@@ -267,6 +265,18 @@ namespace Web.Models
                     {"result","success"}, {"message", "Success."}
                 };
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void importDataToML(int id)
+        {
+            // Import unexisted data
+            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
+            // Update existed data
+            executeQuery($"update DataForML set[Status] = 1 where TargetID = {id} and SourceID in (select Contact_ID as SourceID from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 1)");
+        }
+
 
         /// <summary>
         /// Registor an account by using a new email.
@@ -554,6 +564,7 @@ namespace Web.Models
                 try
                 {
                     executeQuery($"insert into ConfirmedCases (ID) values ({VisitorID})");
+                    importDataToML(VisitorID);
                 }
                 catch (Exception e)
                 {
