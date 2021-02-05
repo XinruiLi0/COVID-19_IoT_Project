@@ -106,7 +106,8 @@ For User App & Web:
 			{
 				0: 	{
 						"UserName": "c", 
-						"UserStatus": 0
+						"UserStatus": 0,
+						"Predict": 0
 					},
 				1:	{	// if the user has contact history with confirmed patient
 						"Address": "d",
