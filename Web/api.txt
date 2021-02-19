@@ -16,7 +16,7 @@ For Account initialize:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 		Content-Type: application/json
-		body(submit data): userName, userEmail, userPassword, age, hasInfectedBefore
+		body(submit data): userName, userEmail, userPassword, age, hasInfectedBefore, bluetoothID
 			example:
 			{
 				"userName": "a"
@@ -24,6 +24,7 @@ For Account initialize:
 				"userPassword": "c", 
 				"age": 24,
 				"hasInfectedBefore": 0  // 0 for not infected, 1 for infected before
+				"bluetoothID": "d"
 			}
 		return data:
 			example:
@@ -138,12 +139,18 @@ For User App & Web:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
 		Content-Type: application/json
-		body(submit data): deviceID, visitorEmail, isMaunalUpdate
+		body(submit data): deviceID, visitorEmail, isMaunalUpdate, closeContactList
 			example:
 			{
 				"deviceID": "a",
 				"visitorEmail": "b",
-				"isMaunalUpdate": 0
+				"isMaunalUpdate": 0,
+				"closeContactList": 
+				{
+					"First Bluetooth ID": "10",		// Value is contact period in second
+					"Second Bluetooth ID": "12",
+					...
+				}
 			}
 		return data:
 			example:
