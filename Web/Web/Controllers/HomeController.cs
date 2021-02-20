@@ -91,9 +91,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate)
+        public Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate, string closeContactList)
         {
-            return DatabaseConnector.leavingVisitorUpdate(deviceID, visitorEmail, isMaunalUpdate);
+            return DatabaseConnector.leavingVisitorUpdate(deviceID, visitorEmail, isMaunalUpdate, closeContactList);
         }
 
         [HttpPost]
@@ -112,6 +112,12 @@ namespace Web.Controllers
         public Dictionary<string, string> visitorInfoCheck(string deviceID)
         {
             return DatabaseConnector.visitorInfoCheck(deviceID);
+        }
+
+        [HttpPost]
+        public Dictionary<int, Dictionary<string, string>> casesLocations()
+        {
+            return DatabaseConnector.casesLocations();
         }
 
     }

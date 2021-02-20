@@ -25,9 +25,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore)
+        public Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore, string bluetoothID)
         {
-            return DatabaseConnector.userRegister(userName, userEmail, userPassword, age, hasInfectedBefore);
+            return DatabaseConnector.userRegister(userName, userEmail, userPassword, age, hasInfectedBefore, bluetoothID);
         }
 
         [HttpPost]

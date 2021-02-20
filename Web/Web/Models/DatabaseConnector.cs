@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
 
 namespace Web.Models
 {
@@ -272,11 +273,10 @@ namespace Web.Models
         private static void importDataToML(int id)
         {
             // Import unexisted data
-            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
+            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], CloseContact, ClosePeriods, [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
             // Update existed data
             executeQuery($"update DataForML set[Status] = 1 where TargetID = {id} and SourceID in (select Contact_ID as SourceID from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 1)");
         }
-
 
         /// <summary>
         /// Registor an account by using a new email.
@@ -287,7 +287,7 @@ namespace Web.Models
         /// <param name="age">User age</param>
         /// <param name="hasInfectedBefore">Whether user being infected before</param>
         /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
-        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore)
+        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore, string bluetoothID)
         {
             var check = getUserID(userEmail);
 
@@ -308,7 +308,7 @@ namespace Web.Models
 
             try
             {
-                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '1')");
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole, BluetoothID) values ('{userName}', '{userEmail}', '{userPassword}', '1', '{bluetoothID}')");
                 var id = getUserID(userEmail);
                 executeQuery($"insert into HealthStatus (ID, Age, HasInfectedBefore, UserStatus) values ({id}, {age}, {hasInfectedBefore}, 0)");
             }
@@ -896,7 +896,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="deviceID">Device id</param>
         /// <returns>Return success in default.</returns>
-        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate)
+        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate, string closeContactList)
         {
             // Get User ID
             var visitorID = getUserID(visitorEmail);
@@ -915,6 +915,7 @@ namespace Web.Models
                 return GuardInfo;
             }
 
+            // Check whether user has entry activity record
             var visitorList = new ConcurrentBag<Dictionary<string, string>>();
             try
             {
@@ -945,6 +946,7 @@ namespace Web.Models
                     };
             }
 
+            // Check whether user has duplicate exit update
             Dictionary<int, Dictionary<string, string>> check;
             try
             {
@@ -973,6 +975,16 @@ namespace Web.Models
                     };
             }
 
+            // Prepare bluetooth update
+            var closeContactInfo = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(closeContactList);
+            var tempID = new Dictionary<string, string>();
+            Parallel.ForEach(closeContactInfo, (i) => {
+                var temp = DataTableToDictionary(executeQuery($"select ID from AccountLogin where BluetoothID = '{i.Key}'"));
+                tempID.Add(temp[0]["ID"], i.Key);
+            });
+            var closeContactID = new ConcurrentDictionary<string, string>(tempID);
+
+            // Update records
             try
             {
                 Parallel.Invoke(
@@ -983,7 +995,15 @@ namespace Web.Models
                             if (visitorID == int.Parse(v["Visitor_ID"]))
                                 return;
 
-                            executeQuery($"update PersonalContact set EndTime = GETDATE(), ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))");
+                            var closeContact = 0;
+                            var closeContactPeriods = 0;
+
+                            if (closeContactID.ContainsKey(v["Visitor_ID"]))
+                            {
+                                closeContact = 1;
+                                closeContactPeriods = int.Parse(closeContactInfo[closeContactID[v["Visitor_ID"]]]);
+                            }
+                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))");
                         });
                     },
                     () =>
@@ -1109,6 +1129,28 @@ namespace Web.Models
                 {
                     {"result","error"}, {"message", "Device not registered."}
                 };
+        }
+
+        /// <summary>
+        /// Get the times of the confirmed cases visitor visited in each indoor area.
+        /// </summary>
+        /// <returns>A dictionary contains the times of the confirmed cases visitor visited in each indoor area and the info of those area.</returns>
+        public static Dictionary<int, Dictionary<string, string>> casesLocations()
+        {
+            Dictionary<int, Dictionary<string, string>> result;
+            try
+            {
+                result = DataTableToDictionary(executeQuery($"select UserName, [Address], latitude, longitude, count(PersonalContact.ID) as CasesCount from GuardInfo join AccountLogin on GuardInfo.ID = AccountLogin.ID join PersonalContact on GuardInfo.ID = PersonalContact.Guard_ID where UserRole = 2 and PersonalContact.ID in (select * from ConfirmedCases) group by UserName, [Address], latitude, longitude"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
+            }
+
+            return result;
         }
     }
 }
