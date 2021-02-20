@@ -273,11 +273,10 @@ namespace Web.Models
         private static void importDataToML(int id)
         {
             // Import unexisted data
-            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
+            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], CloseContact, ClosePeriods, [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
             // Update existed data
             executeQuery($"update DataForML set[Status] = 1 where TargetID = {id} and SourceID in (select Contact_ID as SourceID from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 1)");
         }
-
 
         /// <summary>
         /// Registor an account by using a new email.
@@ -1130,6 +1129,28 @@ namespace Web.Models
                 {
                     {"result","error"}, {"message", "Device not registered."}
                 };
+        }
+
+        /// <summary>
+        /// Get the times of the confirmed cases visitor visited in each indoor area.
+        /// </summary>
+        /// <returns>A dictionary contains the times of the confirmed cases visitor visited in each indoor area and the info of those area.</returns>
+        public static Dictionary<int, Dictionary<string, string>> casesLocations()
+        {
+            Dictionary<int, Dictionary<string, string>> result;
+            try
+            {
+                result = DataTableToDictionary(executeQuery($"select UserName, [Address], latitude, longitude, count(PersonalContact.ID) as CasesCount from GuardInfo join AccountLogin on GuardInfo.ID = AccountLogin.ID join PersonalContact on GuardInfo.ID = PersonalContact.Guard_ID where UserRole = 2 and PersonalContact.ID in (select * from ConfirmedCases) group by UserName, [Address], latitude, longitude"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
+            }
+
+            return result;
         }
     }
 }

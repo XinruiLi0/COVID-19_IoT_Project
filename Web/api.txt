@@ -12,7 +12,7 @@ or
 }
 
 For Account initialize:
-	User Register: (Provides the register server to user, guard, and doctor)
+	User Register: (Provides the register service to user, guard, and doctor)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 		Content-Type: application/json
@@ -33,7 +33,7 @@ For Account initialize:
 				"message": "Success."
 			}
 
-	Guard Register: (Provides the register server to guard)
+	Guard Register: (Provides the register service to guard)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/guardLogin
 		Content-Type: application/json
@@ -54,7 +54,7 @@ For Account initialize:
 				"message": "Success."
 			}
 
-	Doctor Register: (Provides the register server to doctor)
+	Doctor Register: (Provides the register service to doctor)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/doctorLogin
 		Content-Type: application/json
@@ -91,7 +91,7 @@ For Account initialize:
 			}
 
 For User App & Web:
-	User self-check: (Provides self-check server to user app and web)
+	User self-check: (Provides self-check service to user app and web)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
 		Content-Type: application/json
@@ -103,7 +103,6 @@ For User App & Web:
 			}
 		return data:
 			example:
-
 			{
 				0: 	{
 						"UserName": "c", 
@@ -118,7 +117,7 @@ For User App & Web:
 
 			}
 
-	Entrance visitor detection: (Provides device info updating server to user app)
+	Entrance visitor detection: (Provides device info updating service to user app)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorDetect
 		Content-Type: application/json
@@ -135,7 +134,7 @@ For User App & Web:
 				"message": "Success."
 			}
 
-	Exit visitor detection: (Provides device info updating server to user app)
+	Exit visitor detection: (Provides device info updating service to user app)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
 		Content-Type: application/json
@@ -158,6 +157,31 @@ For User App & Web:
 				"result": "success",
 				"message": "Success."
 			}
+	Cases on the map: (Provides confirmed cases distribution service to user app)
+		type: post
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
+		Content-Type: application/json
+		body(submit data): null
+			example: {}
+		return data:
+			example:
+			{
+				0: 	{
+						"UserName": "a", 
+						"Address": "b",
+						"latitude": 1,
+						"longitude": -1,
+						"CasesCount": 0
+					},
+				1:	{
+						"UserName": "c", 
+						"Address": "d",
+						"latitude": 10,
+						"longitude": -10,
+						"CasesCount": 10
+					}
+
+			}
 
 For Doctor Web:
 	Patient status check: (Provides health check server to doctor)
@@ -179,7 +203,7 @@ For Doctor Web:
 				"UserStatus": 0
 			}
 	
-	Patient status update: (Provides health update server to doctor)
+	Patient status update: (Provides health update service to doctor)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/updatePatientStatus
 		Content-Type: application/json
@@ -200,7 +224,7 @@ For Doctor Web:
 			}
 
 For Guard Web:
-	Get guard devices: (Provides checking server to guard)
+	Get guard devices: (Provides checking service to guard)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/getGuardDevices
 		Content-Type: application/json
@@ -223,7 +247,7 @@ For Guard Web:
 					}
 			}
 	
-	Register guard devices: (Provides device adding server to guard)
+	Register guard devices: (Provides device adding service to guard)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/registerGuardDevice
 		Content-Type: application/json
@@ -248,7 +272,7 @@ For Guard Web:
 					}
 			}
 	
-	Delete guard devices: (Provides device removing server to guard)
+	Delete guard devices: (Provides device removing service to guard)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/deleteGuardDevice
 		Content-Type: application/json
@@ -272,7 +296,7 @@ For Guard Web:
 					}
 			}
 
-	Entrance monitor: (Provides device info updating server to guard's web)
+	Entrance monitor: (Provides device info updating service to guard's web)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorInfoCheck
 		Content-Type: application/json
@@ -291,7 +315,7 @@ For Guard Web:
 			}
 
 For Guard Device:
-	Incoming vicitor checking: (Provides incoming vicitor checking server to guard device)
+	Incoming vicitor checking: (Provides incoming vicitor checking service to guard device)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/incomingVisitorDetect
 		Content-Type: application/json
@@ -306,7 +330,7 @@ For Guard Device:
 				"result": "true"
 			}
 	
-	Entrance temperature detection: (Provides device info updating server to guard's temperature sensor)
+	Entrance temperature detection: (Provides device info updating service to guard's temperature sensor)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorTemperatureUpdate
 		Content-Type: application/json

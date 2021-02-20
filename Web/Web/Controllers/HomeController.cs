@@ -114,5 +114,11 @@ namespace Web.Controllers
             return DatabaseConnector.visitorInfoCheck(deviceID);
         }
 
+        [HttpPost]
+        public Dictionary<int, Dictionary<string, string>> casesLocations()
+        {
+            return DatabaseConnector.casesLocations();
+        }
+
     }
 }
