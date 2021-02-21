@@ -566,6 +566,7 @@ namespace Web.Models
                     executeQuery($"insert into ConfirmedCases (ID) values ({VisitorID})");
                     importDataToML(VisitorID);
                     PredictionModel.executePredictionProgress(DataTableToDictionary(executeQuery($"select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {VisitorID} and UserStatus = 0")));
+                    executeQuery($"update HealthStatus set HasInfectedBefore = 1 where ID = {VisitorID}");
                 }
                 catch (Exception e)
                 {
