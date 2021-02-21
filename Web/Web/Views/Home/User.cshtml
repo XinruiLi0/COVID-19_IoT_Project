@@ -33,7 +33,6 @@
                 url: "/Home/checkUserStatus",
                 data: { "userEmail": getUserEmail, "userPassword": getUserPassword },
                 success: function (data) {
-                    alert(data);
                     var obj = JSON.parse(data);
                     var status;
                     var pred;
