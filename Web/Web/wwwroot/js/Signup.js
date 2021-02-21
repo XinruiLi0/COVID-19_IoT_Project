@@ -46,8 +46,8 @@ function DoctorAjax() {
 };
 
 function UserAjax() {
-    if ($("#exampleInputEmail3").val() == "" || $("#password3").val() == "" || $("#uname").val() == "" || $("#age").val() == "") {
-        alert("You leave email or password or username or age empty. Please fill in the blank to Register!");
+    if ($("#exampleInputEmail3").val() == "" || $("#password3").val() == "" || $("#uname").val() == "" || $("#age").val() == "" || $("#bluetooth").val() == "") {
+        alert("You leave email or password or username or age or Bluetooth id empty. Please fill in the blank to Register!");
         return;
     }
     if (($("#conpassword3").val()) != ($("#password3").val())) {
@@ -66,7 +66,7 @@ function UserAjax() {
         type: "POST",
         dataType: "text",
         url: "/Login/userRegister",
-        data: { "userName": $("#uname").val(), "userEmail": $("#exampleInputEmail3").val(), "userPassword": $("#password3").val(), "age": $("#age").val(), "hasInfectedBefore": inf },
+        data: { "userName": $("#uname").val(), "userEmail": $("#exampleInputEmail3").val(), "userPassword": $("#password3").val(), "age": $("#age").val(), "hasInfectedBefore": inf, "bluetoothID": $("#bluetooth").val()},
         success: function (data) {
             alert(data);
             window.location.href = "/Login/Signup";
