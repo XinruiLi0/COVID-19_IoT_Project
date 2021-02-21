@@ -268,7 +268,7 @@ namespace Web.Models
         }
 
         /// <summary>
-        /// 
+        /// Update table for ML training
         /// </summary>
         private static void importDataToML(int id)
         {
@@ -565,6 +565,7 @@ namespace Web.Models
                 {
                     executeQuery($"insert into ConfirmedCases (ID) values ({VisitorID})");
                     importDataToML(VisitorID);
+                    PredictionModel.executePredictionProgress(DataTableToDictionary(executeQuery($"select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {VisitorID} and UserStatus = 0")));
                 }
                 catch (Exception e)
                 {
