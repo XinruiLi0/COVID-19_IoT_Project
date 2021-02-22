@@ -142,6 +142,7 @@ namespace Web.Models
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return -1;
             }
 
@@ -532,7 +533,6 @@ namespace Web.Models
                     };
             }
 
-            Dictionary<int, Dictionary<string, string>> result;
             try
             {
                 executeQuery($"update HealthStatus set UserStatus = {status} where ID = {VisitorID}");
