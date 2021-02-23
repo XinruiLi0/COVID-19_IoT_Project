@@ -40,7 +40,9 @@ class MachineLearningModel(object):
         return predictData[0]
 
 def main():
-    print(MachineLearningModel().predict(1, 50, 0, 1000, 1, 500))
+    predictionModel = MachineLearningModel()
+    print(predictionModel.predict(1, 50, 0, 1000, 1, 500))
+    print(predictionModel.predict(1, 25, 1, 1000, 0, 0))
 
 if __name__ == "__main__":
     main()
