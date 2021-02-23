@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
 
 namespace Web.Models
 {
@@ -13,11 +14,42 @@ namespace Web.Models
         private static string connectionstring = "Server=ivmsdb.cs17etkshc9t.us-east-1.rds.amazonaws.com,1433;Database=ivmsdb;User ID=admin;Password=ivmsdbadmin;Trusted_Connection=false;";
 
         /// <summary>
+        /// Execute sql query
+        /// </summary>
+        /// <param name="query">SQL query</param>
+        /// <returns></returns>
+        private static DataTable executeQuery(string query)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlDataAdapter adp = new SqlDataAdapter(query, connection);
+                    adp.Fill(ds);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+
+            return ds.Tables.Count == 0 ? null : ds.Tables[0];
+        }
+
+        /// <summary>
         /// Convert Datatable to Dictionary
         /// </summary>
         /// <param name="dataTable">Datatable</param>
         /// <returns>Dictionary</returns>
-        public static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
+        private static Dictionary<int, Dictionary<string, string>> DataTableToDictionary(DataTable dataTable)
         {
             Dictionary<int, Dictionary<string, string>> result = new Dictionary<int, Dictionary<string, string>>();
             if (dataTable != null)
@@ -47,7 +79,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="dataTable">Datatable</param>
         /// <returns>Concurrent Bag</returns>
-        public static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
+        private static ConcurrentBag<Dictionary<string, string>> DataTableToConcurrentBag(DataTable dataTable)
         {
             ConcurrentBag<Dictionary<string, string>> result = new ConcurrentBag<Dictionary<string, string>>();
             if (dataTable != null)
@@ -77,33 +109,19 @@ namespace Web.Models
         /// <returns>A dictionary contains user info.</returns>
         private static Dictionary<string, string> checkStatusByID(int ID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {ID}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {ID}"));
             }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
-
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+           
             return result.Count > 0 ? result[0] : new Dictionary<string, string>
                 {
                     {"result","error"}, {"message", "Visitor account not exist."}
@@ -117,28 +135,16 @@ namespace Web.Models
         /// <returns>Return user id.</returns>
         private static int getUserID(string userEmail)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select ID from AccountLogin where UserEmail = '{userEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return 0;
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select ID from AccountLogin where UserEmail = '{userEmail}'"));
+            }
+            catch (Exception e)
+            {
+                return -1;
             }
 
-            var result = DataTableToDictionary(ds.Tables[0]);
             return result.Count > 0 ? int.Parse(result[0]["ID"]) : 0;
         }
 
@@ -149,36 +155,25 @@ namespace Web.Models
         /// <returns>A list of guard devices.</returns>
         private static Dictionary<int, Dictionary<string, string>> getGuardDevices(int ID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select DeviceID, Description from GuardDevices where ID = {ID}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    var temp = new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
+                result = DataTableToDictionary(executeQuery($"select DeviceID, Description from GuardDevices where ID = {ID}"));
+            }
+            catch (Exception e)
+            {
+                var temp = new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
 
-                    return new Dictionary<int, Dictionary<string, string>>
-                        {
-                            {0, temp}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, temp}
+                    };
             }
 
-            return DataTableToDictionary(ds.Tables[0]);
+            return result;
         }
 
         /// <summary>
@@ -188,31 +183,18 @@ namespace Web.Models
         /// <returns>A dictionary contain guard id and current visitor id</returns>
         private static Dictionary<string, string> prepareActivityUpdate(string deviceID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select ID, VisitorID from GuardDevices where DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select ID, VisitorID from GuardDevices where DeviceID = '{deviceID}'"));
             }
-
-            var result = DataTableToDictionary(ds.Tables[0]);
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
 
             return result.Count > 0 ? result[0] : new Dictionary<string, string>
                 {
@@ -227,28 +209,7 @@ namespace Web.Models
         /// <returns>A concurrent bag of visitor id.</returns>
         private static ConcurrentBag<Dictionary<string, string>> getCurrentContacts(string guardID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select Visitor_ID from CurrentContact where Guard_ID = {guardID}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            return DataTableToConcurrentBag(ds.Tables[0]);
+            return DataTableToConcurrentBag(executeQuery($"select Visitor_ID from CurrentContact where Guard_ID = {guardID}"));
         }
 
         /// <summary>
@@ -282,53 +243,74 @@ namespace Web.Models
                 Parallel.Invoke(
                     () =>
                     {
-                        DataSet ds = new DataSet();
-
                         Parallel.ForEach(visitorList, (v) =>
                         {
-                            using (SqlConnection connection = new SqlConnection(connectionstring))
-                            {
-                                try
-                                {
-                                    connection.Open();
-                                    SqlDataAdapter adp = new SqlDataAdapter($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(), 0); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE(), 0);", connection);
-                                    adp.Fill(ds);
-                                }
-                                catch (Exception e)
-                                {
-                                    throw e;
-                                }
-                                finally
-                                {
-                                    if (connection.State == ConnectionState.Open)
-                                        connection.Close();
-                                }
-                            }
+                            executeQuery($"insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({check["VisitorID"]}, {v["Visitor_ID"]}, {check["ID"]}, GETDATE(), 0); insert into PersonalContact(ID, Contact_ID, Guard_ID, StartTime, ManualUpdate) values ({v["Visitor_ID"]}, {check["VisitorID"]}, {check["ID"]}, GETDATE(), 0);");
                         });
                     },
                     () =>
                     {
-                        DataSet ds = new DataSet(); 
-                        
-                        using (SqlConnection connection = new SqlConnection(connectionstring))
-                        {
-                            try
-                            {
-                                connection.Open();
-                                SqlDataAdapter adp = new SqlDataAdapter($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({check["VisitorID"]}, {check["ID"]})", connection);
-                                adp.Fill(ds);
-                            }
-                            catch (Exception e)
-                            {
-                                throw e;
-                            }
-                            finally
-                            {
-                                if (connection.State == ConnectionState.Open)
-                                    connection.Close();
-                            }
-                        }
+                        executeQuery($"insert into CurrentContact (Visitor_ID, Guard_ID) values ({check["VisitorID"]}, {check["ID"]})");
                     });
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
+
+            return new Dictionary<string, string>
+                {
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void importDataToML(int id)
+        {
+            // Import unexisted data
+            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], CloseContact, ClosePeriods, [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
+            // Update existed data
+            executeQuery($"update DataForML set[Status] = 1 where TargetID = {id} and SourceID in (select Contact_ID as SourceID from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 1)");
+        }
+
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="userName">User name</param>
+        /// <param name="userEmail">User email</param>
+        /// <param name="userPassword">User password</param>
+        /// <param name="age">User age</param>
+        /// <param name="hasInfectedBefore">Whether user being infected before</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
+        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int age, int hasInfectedBefore, string bluetoothID)
+        {
+            var check = getUserID(userEmail);
+
+            if (userEmail == null)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
+            }
+            else if (check != 0)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
+            }
+
+            try
+            {
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole, BluetoothID) values ('{userName}', '{userEmail}', '{userPassword}', '1', '{bluetoothID}')");
+                var id = getUserID(userEmail);
+                executeQuery($"insert into HealthStatus (ID, Age, HasInfectedBefore, UserStatus) values ({id}, {age}, {hasInfectedBefore}, 0)");
             }
             catch (Exception e)
             {
@@ -347,46 +329,25 @@ namespace Web.Models
         /// <summary>
         /// Registor an account by using a new email.
         /// </summary>
-        /// <param name="userName">User name</param>
-        /// <param name="userEmail">User email</param>
-        /// <param name="userPassword">User password</param>
-        /// <param name="userRole">User role</param>
+        /// <param name="guardName">Guard name</param>
+        /// <param name="guardEmail">Guard email</param>
+        /// <param name="guardPassword">Guard password</param>
+        /// <param name="address">Address</param>
+        /// <param name="latitude">Latitude</param>
+        /// <param name="longitude">Longitude</param>
         /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
-        public static Dictionary<string, string> userRegister(string userName, string userEmail, string userPassword, int userRole)
+        public static Dictionary<string, string> guardRegister(string guardName, string guardEmail, string guardPassword, string address, float latitude, float longitude)
         {
-            DataSet ds = new DataSet();
+            var check = getUserID(guardEmail);
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserEmail from AccountLogin where UserEmail = '{userEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
-            }
-
-            var result = DataTableToDictionary(ds.Tables[0]);
-            if (userEmail == null)
+            if (guardEmail == null)
             {
                 return new Dictionary<string, string>
                     {
                         {"result","error"}, {"message", "Unknow email."}
                     };
             }
-            else if (result.Count > 0)
+            else if (check != 0)
             {
                 return new Dictionary<string, string>
                     {
@@ -394,53 +355,62 @@ namespace Web.Models
                     };
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{userName}', '{userEmail}', '{userPassword}', '{userRole}')", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{guardName}', '{guardEmail}', '{guardPassword}', '2')");
+                var id = getUserID(guardEmail);
+                executeQuery($"insert into GuardInfo (ID, Address, Latitude, Longitude) values ('{id}', '{address}', '{latitude}', '{longitude}')");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
                         {
                             {"result","error"}, {"message", e.ToString()}
                         };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
             }
 
-            if (userRole == 1)
-            {
-                var id = getUserID(userEmail);
-
-                using (SqlConnection connection = new SqlConnection(connectionstring))
+            return new Dictionary<string, string>
                 {
-                    try
+                    {"result","success"}, {"message", "Success."}
+                };
+        }
+
+        /// <summary>
+        /// Registor an account by using a new email.
+        /// </summary>
+        /// <param name="doctorName">Doctor name</param>
+        /// <param name="doctorEmail">Doctor email</param>
+        /// <param name="doctorPassword">Doctor password</param>
+        /// <returns>A dictionary that can indicate whether the procress is success or not.</returns>
+        public static Dictionary<string, string> doctorRegister(string doctorName, string doctorEmail, string doctorPassword)
+        {
+            var check = getUserID(doctorEmail);
+
+            if (doctorEmail == null)
+            {
+                return new Dictionary<string, string>
                     {
-                        connection.Open();
-                        SqlDataAdapter adp = new SqlDataAdapter($"insert into HealthStatus (ID, UserStatus) values ({id}, 0)", connection);
-                        adp.Fill(ds);
-                    }
-                    catch (Exception e)
+                        {"result","error"}, {"message", "Unknow email."}
+                    };
+            }
+            else if (check != 0)
+            {
+                return new Dictionary<string, string>
                     {
-                        return new Dictionary<string, string>
-                            {
-                                {"result","error"}, {"message", e.ToString()}
-                            };
-                    }
-                    finally
+                        {"result","error"}, {"message", "Account already exist."}
+                    };
+            }
+
+            try
+            {
+                executeQuery($"insert into AccountLogin (UserName, UserEmail, UserPassword, UserRole) values ('{doctorName}', '{doctorEmail}', '{doctorPassword}', '3')");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
                     {
-                        if (connection.State == ConnectionState.Open)
-                            connection.Close();
-                    }
-                }
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>
@@ -458,32 +428,18 @@ namespace Web.Models
         /// <returns>If success, return a dictionary contains user name, return error message otherwise.</returns>
         public static Dictionary<string, string> userLogin(string userEmail, string userPassword, int userRole)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserPassword, UserRole from AccountLogin where UserEmail = '{userEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select UserName, UserEmail, UserPassword, UserRole from AccountLogin where UserEmail = '{userEmail}'"));
             }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
 
             if (userEmail == null || result.Count == 0)
             {
@@ -530,32 +486,18 @@ namespace Web.Models
                 return check;
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select UserName, UserEmail, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where UserEmail = '{visitorEmail}'"));
             }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
 
             return result.Count > 0 ? result[0] : new Dictionary<string, string>
                 {
@@ -590,76 +532,46 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update HealthStatus set UserStatus = {status} where ID = {VisitorID}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                executeQuery($"update HealthStatus set UserStatus = {status} where ID = {VisitorID}");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             if (status == 0)
             {
-                using (SqlConnection connection = new SqlConnection(connectionstring))
+                try
                 {
-                    try
+                    executeQuery($"delete from ConfirmedCases where ID = {VisitorID}");
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
                     {
-                        connection.Open();
-                        SqlDataAdapter adp = new SqlDataAdapter($"delete from ConfirmedCases where ID = {VisitorID}", connection);
-                        adp.Fill(ds);
-                    }
-                    catch (Exception e)
-                    {
-                        return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                    }
-                    finally
-                    {
-                        if (connection.State == ConnectionState.Open)
-                            connection.Close();
-                    }
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
             }
             else if (status == 1)
             {
-                using (SqlConnection connection = new SqlConnection(connectionstring))
+                try
                 {
-                    try
+                    executeQuery($"insert into ConfirmedCases (ID) values ({VisitorID})");
+                    importDataToML(VisitorID);
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<string, string>
                     {
-                        connection.Open();
-                        SqlDataAdapter adp = new SqlDataAdapter($"insert into ConfirmedCases (ID) values ({VisitorID})", connection);
-                        adp.Fill(ds);
-                    }
-                    catch (Exception e)
-                    {
-                        return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                    }
-                    finally
-                    {
-                        if (connection.State == ConnectionState.Open)
-                            connection.Close();
-                    }
+                        {"result","error"}, {"message", e.ToString()}
+                    };
                 }
             }
 
@@ -699,32 +611,19 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select UserName, UserStatus from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {id}", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<int, Dictionary<string, string>> 
-                        {
-                            {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
-                        };   
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select UserName, UserStatus, Predict from AccountLogin join HealthStatus on AccountLogin.ID = HealthStatus.ID where AccountLogin.ID = {id}"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
             }
 
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
             if (result.Count == 0)
             {
                 result.Add(0, new Dictionary<string, string> { { "result", "error" }, { "message", "User health status not exist." } });
@@ -747,37 +646,20 @@ namespace Web.Models
 
         private static Dictionary<int, Dictionary<string, string>> checkContactHistory(int ID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"delete from PersonalContact where DATEDIFF(day, EndTime, getdate()) >= 14; select [Address], StartTime, EndTime from PersonalContact join GuardInfo on PersonalContact.Guard_ID = GuardInfo.ID where PersonalContact.ID = {ID} and Contact_ID in (select ID as Contact_ID from ConfirmedCases);", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    var temp = new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-
-                    return new Dictionary<int, Dictionary<string, string>>
-                        {
-                            {0, temp}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"delete from PersonalContact where DATEDIFF(day, EndTime, getdate()) >= 14; select [Address], StartTime, EndTime from PersonalContact join GuardInfo on PersonalContact.Guard_ID = GuardInfo.ID where PersonalContact.ID = {ID} and Contact_ID in (select ID as Contact_ID from ConfirmedCases);"));
             }
-
-            // Convert table to dictionary
-            return DataTableToDictionary(ds.Tables[0]);
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
+            }
+            
+            return result;
         }
 
         /// <summary>
@@ -851,33 +733,16 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"insert into GuardDevices (ID, DeviceID, Description, VisitorID, VisitorTemperature, LastUpdated) values ({guardID}, '{deviceID}', '{deviceDescription}', 1, 37, GETDATE()); ", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    var temp = new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-
-                    return new Dictionary<int, Dictionary<string, string>>
-                        {
-                            {0, temp}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                executeQuery($"insert into GuardDevices (ID, DeviceID, Description, VisitorID, VisitorTemperature, LastUpdated) values ({guardID}, '{deviceID}', '{deviceDescription}', 1, 37, GETDATE());");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
             }
 
             return getGuardDevices(guardID);
@@ -917,33 +782,16 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"delete from GuardDevices where ID = {id} and DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    var temp = new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-
-                    return new Dictionary<int, Dictionary<string, string>>
-                        {
-                            {0, temp}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                executeQuery($"delete from GuardDevices where ID = {id} and DeviceID = '{deviceID}'");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
             }
 
             return getGuardDevices(id);
@@ -1004,31 +852,18 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> check;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime from PersonalContact where ID = {visitorID} and EndTime is not null order by StartTime desc;", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
+                check = DataTableToDictionary(executeQuery($"select top 1 EndTime from PersonalContact where ID = {visitorID} and EndTime is not null order by StartTime desc;"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
                     {
                         {"result","error"}, {"message", e.ToString()}
                     };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
             }
-
-            var check = DataTableToDictionary(ds.Tables[0]);
 
             if (check.Count != 0)
             {
@@ -1038,28 +873,16 @@ namespace Web.Models
                     };
             }
 
-            ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorID = {visitorID}, VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                executeQuery($"update GuardDevices set VisitorID = {visitorID}, VisitorTemperature = 0, LastUpdated = GETDATE() where DeviceID = '{deviceID}'");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             return new Dictionary<string, string>
@@ -1073,7 +896,7 @@ namespace Web.Models
         /// </summary>
         /// <param name="deviceID">Device id</param>
         /// <returns>Return success in default.</returns>
-        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate)
+        public static Dictionary<string, string> leavingVisitorUpdate(string deviceID, string visitorEmail, int isMaunalUpdate, string closeContactList)
         {
             // Get User ID
             var visitorID = getUserID(visitorEmail);
@@ -1092,6 +915,7 @@ namespace Web.Models
                 return GuardInfo;
             }
 
+            // Check whether user has entry activity record
             var visitorList = new ConcurrentBag<Dictionary<string, string>>();
             try
             {
@@ -1122,31 +946,19 @@ namespace Web.Models
                     };
             }
 
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            // Check whether user has duplicate exit update
+            Dictionary<int, Dictionary<string, string>> check;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select top 1 EndTime, ManualUpdate from PersonalContact where ID = {visitorID} and Guard_ID = {GuardInfo["ID"]} order by StartTime desc;", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
+                check = DataTableToDictionary(executeQuery($"select top 1 EndTime, ManualUpdate from PersonalContact where ID = {visitorID} and Guard_ID = {GuardInfo["ID"]} order by StartTime desc;"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
                     {
                         {"result","error"}, {"message", e.ToString()}
                     };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
             }
-
-            var check = DataTableToDictionary(ds.Tables[0]);
 
             if (check.Count == 0 && visitorList.Count != 1)
             {
@@ -1163,60 +975,40 @@ namespace Web.Models
                     };
             }
 
+            // Prepare bluetooth update
+            var closeContactInfo = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(closeContactList);
+            var tempID = new Dictionary<string, string>();
+            Parallel.ForEach(closeContactInfo, (i) => {
+                var temp = DataTableToDictionary(executeQuery($"select ID from AccountLogin where BluetoothID = '{i.Key}'"));
+                tempID.Add(temp[0]["ID"], i.Key);
+            });
+            var closeContactID = new ConcurrentDictionary<string, string>(tempID);
+
+            // Update records
             try
             {
                 Parallel.Invoke(
                     () =>
                     {
-                        DataSet ds = new DataSet();
-
                         Parallel.ForEach(visitorList, (v) =>
                         {
-                            using (SqlConnection connection = new SqlConnection(connectionstring))
-                            {
-                                if (visitorID == int.Parse(v["Visitor_ID"]))
-                                    return;
+                            if (visitorID == int.Parse(v["Visitor_ID"]))
+                                return;
 
-                                try
-                                {
-                                    connection.Open();
-                                    SqlDataAdapter adp = new SqlDataAdapter($"update PersonalContact set EndTime = GETDATE(), ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))", connection);
-                                    adp.Fill(ds);
-                                }
-                                catch (Exception e)
-                                {
-                                    throw e;
-                                }
-                                finally
-                                {
-                                    if (connection.State == ConnectionState.Open)
-                                        connection.Close();
-                                }
+                            var closeContact = 0;
+                            var closeContactPeriods = 0;
+
+                            if (closeContactID.ContainsKey(v["Visitor_ID"]))
+                            {
+                                closeContact = 1;
+                                closeContactPeriods = int.Parse(closeContactInfo[closeContactID[v["Visitor_ID"]]]);
                             }
+                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))");
                         });
                     },
                     () =>
                     {
-                        DataSet ds = new DataSet();
-
-                        using (SqlConnection connection = new SqlConnection(connectionstring))
-                        {
-                            try
-                            {
-                                connection.Open();
-                                SqlDataAdapter adp = new SqlDataAdapter($"delete from CurrentContact where Visitor_ID = {GuardInfo["VisitorID"]} and Guard_ID = {GuardInfo["ID"]}", connection);
-                                adp.Fill(ds);
-                            }
-                            catch (Exception e)
-                            {
-                                throw e;
-                            }
-                            finally
-                            {
-                                if (connection.State == ConnectionState.Open)
-                                    connection.Close();
-                            }
-                        }
+                        executeQuery($"delete from CurrentContact where Visitor_ID = {GuardInfo["VisitorID"]} and Guard_ID = {GuardInfo["ID"]}");
                     });
             }
             catch (Exception e)
@@ -1240,31 +1032,19 @@ namespace Web.Models
         /// <returns>Return true if a visitor is waiting.</returns>
         public static Dictionary<string, string> incomingVisitorDetect(string deviceID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select VisitorTemperature from GuardDevices where DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select VisitorTemperature from GuardDevices where DeviceID = '{deviceID}'"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
-            var result = DataTableToDictionary(ds.Tables[0]);
             if (result.Count == 0)
             {
                 return new Dictionary<string, string>
@@ -1298,28 +1078,16 @@ namespace Web.Models
         /// <returns>Return success in default, return exception otherwise.</returns>
         public static Dictionary<string, string> visitorTemperatureUpdate(string deviceID, float temperature)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"update GuardDevices set VisitorTemperature = {temperature} where DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                executeQuery($"update GuardDevices set VisitorTemperature = {temperature} where DeviceID = '{deviceID}'");
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
             }
 
             if (temperature + 1 >= 0.1)
@@ -1344,37 +1112,45 @@ namespace Web.Models
         /// <returns>A dictionary contains visitor health status.</returns>
         public static Dictionary<string, string> visitorInfoCheck(string deviceID)
         {
-            DataSet ds = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            Dictionary<int, Dictionary<string, string>> result;
+            try
             {
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adp = new SqlDataAdapter($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, DATEDIFF(ss, GuardDevices.LastUpdated, GETDATE()) AS LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorID = AccountLogin.ID join HealthStatus on GuardDevices.VisitorID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'", connection);
-                    adp.Fill(ds);
-                }
-                catch (Exception e)
-                {
-                    return new Dictionary<string, string>
-                        {
-                            {"result","error"}, {"message", e.ToString()}
-                        };
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                }
+                result = DataTableToDictionary(executeQuery($"select AccountLogin.UserName, HealthStatus.UserStatus, GuardDevices.VisitorTemperature, DATEDIFF(ss, GuardDevices.LastUpdated, GETDATE()) AS LastUpdated from GuardDevices join AccountLogin on GuardDevices.VisitorID = AccountLogin.ID join HealthStatus on GuardDevices.VisitorID = HealthStatus.ID where GuardDevices.DeviceID = '{deviceID}'"));
             }
-
-            // Convert table to dictionary
-            var result = DataTableToDictionary(ds.Tables[0]);
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
 
             return result.Count > 0 ? result[0] : new Dictionary<string, string>
                 {
                     {"result","error"}, {"message", "Device not registered."}
                 };
+        }
+
+        /// <summary>
+        /// Get the times of the confirmed cases visitor visited in each indoor area.
+        /// </summary>
+        /// <returns>A dictionary contains the times of the confirmed cases visitor visited in each indoor area and the info of those area.</returns>
+        public static Dictionary<int, Dictionary<string, string>> casesLocations()
+        {
+            Dictionary<int, Dictionary<string, string>> result;
+            try
+            {
+                result = DataTableToDictionary(executeQuery($"select UserName, [Address], latitude, longitude, count(PersonalContact.ID) as CasesCount from GuardInfo join AccountLogin on GuardInfo.ID = AccountLogin.ID join PersonalContact on GuardInfo.ID = PersonalContact.Guard_ID where UserRole = 2 and PersonalContact.ID in (select * from ConfirmedCases) group by UserName, [Address], latitude, longitude"));
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<int, Dictionary<string, string>>
+                    {
+                        {0, new Dictionary<string, string> { { "result", "error" }, { "message", e.ToString() } } }
+                    };
+            }
+
+            return result;
         }
     }
 }
