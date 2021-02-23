@@ -34,12 +34,13 @@ class MachineLearningModel(object):
     def predict(self, id, age, hasInfectedBefore, periods, closeContact, closePeriods):
         predictData = self.model.predict([[age, hasInfectedBefore, periods, closeContact, closePeriods]])
         # cursor = self.conn.cursor()
-        # sql = "update HealthStatus set Predict = " + predictData[0] + " where ID = " + id
-        # data = pd.read_sql(sql,self.conn)
+        # sql = "update HealthStatus set Predict = " + str(predictData[0]) + " where ID = " + str(id)
+        # cursor.execute(sql)
+        # self.conn.commit()
         return predictData[0]
 
 def main():
-    print(MachineLearningModel().predict(1, 20, 1, 1000, 0, 0))
+    print(MachineLearningModel().predict(1, 50, 0, 1000, 1, 500))
 
 if __name__ == "__main__":
     main()
