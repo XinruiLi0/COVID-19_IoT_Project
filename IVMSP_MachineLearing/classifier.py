@@ -31,11 +31,15 @@ class MachineLearningModel(object):
         # Initialize ML model
         self.model.fit(x_train, y_train)
 
-    def predict(self, age, hasInfectedBefore, periods, closeContact, closePeriods):
-        return self.model.predict([[age, hasInfectedBefore, periods, closeContact, closePeriods]])
+    def predict(self, id, age, hasInfectedBefore, periods, closeContact, closePeriods):
+        predictData = self.model.predict([[age, hasInfectedBefore, periods, closeContact, closePeriods]])
+        # cursor = self.conn.cursor()
+        # sql = "update HealthStatus set Predict = " + predictData[0] + " where ID = " + id
+        # data = pd.read_sql(sql,self.conn)
+        return predictData[0]
 
 def main():
-    print(MachineLearningModel().predict(20, 1, 1000, 0, 0))
+    print(MachineLearningModel().predict(1, 20, 1, 1000, 0, 0))
 
 if __name__ == "__main__":
     main()
