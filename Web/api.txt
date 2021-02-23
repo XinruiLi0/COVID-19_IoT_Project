@@ -76,7 +76,7 @@ For Account initialize:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 		Content-Type: application/json
-		body(submit data): 
+		body(submit data): userEmail, userPassword, userRole
 			example:
 			{
 				"userEmail": "a", 
@@ -95,7 +95,7 @@ For User App & Web:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
 		Content-Type: application/json
-		body(submit data): 
+		body(submit data): userEmail, userPassword
 			example:
 			{
 				"userEmail": "a", 
