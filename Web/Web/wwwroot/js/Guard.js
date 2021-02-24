@@ -4,7 +4,6 @@ window.onload = function () {
     var username = getCookie("username");
     $("#wel").html("Welcome the Guard User: " + userem);
     $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
-    getLocation();
     var device = getCookie("deviceid");
 
     setInterval(function () {
