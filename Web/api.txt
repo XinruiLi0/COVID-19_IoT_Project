@@ -159,7 +159,7 @@ For User App & Web:
 			}
 	Cases on the map: (Provides confirmed cases distribution service to user app)
 		type: post
-		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/casesLocations
 		Content-Type: application/json
 		body(submit data): null
 			example: {}

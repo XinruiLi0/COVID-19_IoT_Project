@@ -565,8 +565,6 @@ namespace Web.Models
                 {
                     executeQuery($"insert into ConfirmedCases (ID) values ({VisitorID})");
                     importDataToML(VisitorID);
-                    PredictionModel.executePredictionProgress(DataTableToDictionary(executeQuery($"select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {VisitorID} and UserStatus = 0")));
-                    executeQuery($"update HealthStatus set HasInfectedBefore = 1 where ID = {VisitorID}");
                 }
                 catch (Exception e)
                 {
@@ -857,7 +855,7 @@ namespace Web.Models
             Dictionary<int, Dictionary<string, string>> check;
             try
             {
-                check = DataTableToDictionary(executeQuery($"select top 1 EndTime from PersonalContact where ID = {visitorID} and EndTime is not null order by StartTime desc;"));
+                check = DataTableToDictionary(executeQuery($"select top 1 EndTime from PersonalContact where ID = {visitorID} and EndTime is null order by StartTime desc;"));
             }
             catch (Exception e)
             {
@@ -1005,12 +1003,12 @@ namespace Web.Models
                                 closeContact = 1;
                                 closeContactPeriods = int.Parse(closeContactInfo[closeContactID[v["Visitor_ID"]]]);
                             }
-                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {GuardInfo["VisitorID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {GuardInfo["VisitorID"]} and Contact_ID = {v["Visitor_ID"]})))");
+                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {visitorID} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {visitorID} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {visitorID} and StartTime in (select max(StartTime) from PersonalContact where ID = {v["Visitor_ID"]} and Contact_ID = {visitorID})))");
                         });
                     },
                     () =>
                     {
-                        executeQuery($"delete from CurrentContact where Visitor_ID = {GuardInfo["VisitorID"]} and Guard_ID = {GuardInfo["ID"]}");
+                        executeQuery($"delete from CurrentContact where Visitor_ID = {visitorID} and Guard_ID = {GuardInfo["ID"]}");
                     });
             }
             catch (Exception e)
