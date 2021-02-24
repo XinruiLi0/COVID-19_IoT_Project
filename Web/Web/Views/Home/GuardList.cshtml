@@ -7,19 +7,22 @@
 <h1 id="wel"> </h1>
 <p id="thx"> </p>
 
-<div class="row">
+
     <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2" style="position:relative;">
         <img class="img-responsive" src="~/lib/content/guard.png" alt="users" style="width:100%; height:100%">
     </div>
-    <form class="col-lg-1 col-mid-1 col-sm-1 col-xs-1">
-        <input class="btn btn-primary" onClick="RegAjax()" type="button" value="Register">
-    </form>
 
-    <form class="col-lg-1 col-mid-1 col-sm-1 col-xs-1">
-        <input class="btn btn-primary" onClick="delAjax()" type="button" value="Delete">
-    </form>
+    <div class="row">      
+        <form class="offset-md-8 col-md-1">
+            <input class="btn btn-success" onClick="RegAjax()" type="button" value="Register">
+        </form>
 
-</div>
+        <form class="col-md-1">
+            <input class="btn btn-success" onClick="delAjax()" type="button" value="Remove">
+        </form>
+
+    </div>
+
     <table id="list" class="table">
       
     </table>
