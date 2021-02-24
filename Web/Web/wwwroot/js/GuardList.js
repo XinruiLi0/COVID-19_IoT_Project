@@ -4,8 +4,8 @@ window.onload = function () {
     var username = getCookie("username");
     var userpass = getCookie("userPassword");
     var userrol = getCookie("userRole");
-    $("#wel").html("Welcome the Guard User: " + userem);
-    $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!");
+    $("#wel").html("Welcome the Guard User: " + username);
+    $("#thx").html("Dear guard Thank you for your effort to keep everynody healthy!");
     $.ajax({
         type: "POST",
         dataType: "text",
@@ -96,8 +96,8 @@ function showList(data) {
 function delAjax() {
     var userem = getCookie("userEmail");
     var userpass = getCookie("userPassword");
-    var vem = $("#delid").val();
-    if ($("#delid").val() == "") {
+    var id = prompt("Input Device ID to delete: ", "");
+    if (id == "") {
         alert("You leave Device Id empty. Please fill in the blank to delete device!");
         return;
     }
@@ -105,7 +105,7 @@ function delAjax() {
         type: "POST",
         dataType: "text",
         url: "/Home/deleteGuardDevice",
-        data: { "userEmail": userem, "userPassword": userpass, "deviceID": vem },
+        data: { "userEmail": userem, "userPassword": userpass, "deviceID": id },
         success: function (data) {
             alert(data);
             updateList();
@@ -119,18 +119,21 @@ function delAjax() {
 function RegAjax() {
     var userem = getCookie("userEmail");
     var userpass = getCookie("userPassword");
-    var dev = $("#devid").val();
-    var des = $("#descr").val();
-
-    if (dev == "" || des == "") {
-        alert("You leave desciption or device ID empty. Please fill in the blank to Register!");
+    var id = prompt("Input Device ID to delete: ", "");
+    if (id == "") {
+        alert("You leave Device Id empty. Please fill in the blank to delete device!");
+        return;
+    }
+    var des = prompt("Please input Device Description: ", "");
+    if (des == "") {
+        alert("You leave Device description empty. Please fill in the blank to delete device!");
         return;
     }
     $.ajax({
         type: "POST",
         dataType: "text",
         url: "/Home/registerGuardDevice",
-        data: { "userEmail": userem, "userPassword": userpass, "deviceID": dev, "deviceDescription": des },
+        data: { "userEmail": userem, "userPassword": userpass, "deviceID": id, "deviceDescription": des },
         success: function (data) {
             alert(data);
             updateList();
