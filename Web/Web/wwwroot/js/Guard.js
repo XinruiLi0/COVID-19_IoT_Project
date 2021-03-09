@@ -4,7 +4,6 @@ window.onload = function () {
     var username = getCookie("username");
     $("#wel").html("Welcome the Guard User: " + userem);
     $("#thx").html("Dear " + username + " Thank you for your effort to keep everynody healthy!")
-    getLocation();
     var device = getCookie("deviceid");
 
     setInterval(function () {
@@ -26,7 +25,7 @@ window.onload = function () {
                     var str1 = "Visitor temporaliy coming through this device is called " + userem;
                     var str2 = "<br> Visitor Temperature is testing!";
                     var str3 = "<br> Visitor time came through device in " + updateTime + " seconds";
-                    $("#lastVisitor").html(str1 + str2 + str4 + str3);
+                    $("#lastVisitor").html(str1 + str2 + str3);
                 }
 
                 else if (updateTime <= 30) {

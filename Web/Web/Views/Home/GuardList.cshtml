@@ -7,27 +7,22 @@
 <h1 id="wel"> </h1>
 <p id="thx"> </p>
 
-<div class="row">
-    <div class="col-lg-3 col-mid-3 col-sm-3 col-xs-3" style="position:relative;">
+
+    <div class="col-lg-2 col-mid-2 col-sm-2 col-xs-2" style="position:relative;">
         <img class="img-responsive" src="~/lib/content/guard.png" alt="users" style="width:100%; height:100%">
     </div>
-    <form class="col-lg-9 col-mid-9 col-sm-9 col-xs-9">
-        <label class="form-check-label lead font-weight-bold" for="exampleCheck1">Please input new Device ID : </label>
-        <input id="devid" type="text" size="25" placeholder="Device ID here......" name="regid">
-        <br>
-        <label class="form-check-label lead font-weight-bold" for="exampleCheck1">Please input Device Description: </label>
-        <input id="descr" type="text" size="35" placeholder="Device Description here......" name="devid">
-        <br>
-        <input class="btn btn-primary" id="searching" onClick="RegAjax()" type="button" value="Register">
-        <br>
-        <br>
-        <label class="form-check-label lead font-weight-bold" for="exampleCheck1">Input Device ID to delete: </label>
-        <input id="delid" type="text" size="25" placeholder="Device ID here......" name="delid">
-        <br>
-        <input class="btn btn-primary" id="searching" onClick="delAjax()" type="button" value="Delete">
-    </form>
 
-</div>
+    <div class="row">      
+        <form class="offset-md-8 col-md-1">
+            <input class="btn btn-success" onClick="RegAjax()" type="button" value="Register">
+        </form>
+
+        <form class="col-md-1">
+            <input class="btn btn-success" onClick="delAjax()" type="button" value="Remove">
+        </form>
+
+    </div>
+
     <table id="list" class="table">
       
     </table>

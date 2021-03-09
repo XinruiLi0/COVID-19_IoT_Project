@@ -115,9 +115,9 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public Dictionary<int, Dictionary<string, string>> casesLocations()
+        public string casesLocations()
         {
-            return DatabaseConnector.casesLocations();
+            return JsonConvert.SerializeObject(DatabaseConnector.casesLocations());
         }
 
     }
