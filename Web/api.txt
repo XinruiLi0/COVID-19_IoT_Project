@@ -44,8 +44,8 @@ For Account initialize:
 				"userEmail": "b", 
 				"userPassword": "c", 
 				"address": "d",
-				latitude: -1.1234567,
-				longitude: 1.1234567
+				"latitude": -1.1234567,
+				"longitude": 1.1234567
 			}
 		return data:
 			example:
@@ -72,11 +72,11 @@ For Account initialize:
 				"message": "Success."
 			}
 	
-	User Login: (Provides login to user, guard, and doctor)
+	Account Login: (Provides login to user, guard, and doctor)
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Login/userLogin
 		Content-Type: application/json
-		body(submit data): 
+		body(submit data): userEmail, userPassword, userRole
 			example:
 			{
 				"userEmail": "a", 
@@ -95,7 +95,7 @@ For User App & Web:
 		type: post
 		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus
 		Content-Type: application/json
-		body(submit data): 
+		body(submit data): userEmail, userPassword
 			example:
 			{
 				"userEmail": "a", 
@@ -159,7 +159,7 @@ For User App & Web:
 			}
 	Cases on the map: (Provides confirmed cases distribution service to user app)
 		type: post
-		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate
+		url: http://ivmsp.us-east-1.elasticbeanstalk.com/Home/casesLocations
 		Content-Type: application/json
 		body(submit data): null
 			example: {}
