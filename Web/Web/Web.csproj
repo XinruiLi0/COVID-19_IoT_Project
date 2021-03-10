@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Views\UserPage\**" />
     <Content Remove="Views\UserPage\**" />
@@ -16,6 +20,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
 	<PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+	<PackageReference Include="TensorFlow.NET" Version="0.33.0" />
   </ItemGroup>
 
 </Project>
