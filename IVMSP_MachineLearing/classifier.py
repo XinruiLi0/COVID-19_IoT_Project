@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
+from datetime import datetime
+import time
 import pyodbc
+
 
 class MachineLearningModel(object):
     conn = pyodbc.connect(
@@ -16,11 +19,14 @@ class MachineLearningModel(object):
     )
 
     model = LogisticRegression()
+    lastTrainingTime = datetime.today()
 
     def __init__(self):
         self.training()
 
     def training(self):
+        print("Training model at " + str(datetime.now()))
+
         # Prepare training data
         cursor = self.conn.cursor()
         sql = "select Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, Status from DataForML;"
@@ -35,7 +41,14 @@ class MachineLearningModel(object):
         self.model = LogisticRegression()
         self.model.fit(x_train, y_train)
 
+        # Store last training time for retraining purpose
+        self.lastTrainingTime = datetime.today()
+
+        print("Training finished")
+
     def predict(self):
+        print("Run prediction at " + str(datetime.now()))
+
         # Collect training data
         cursor = self.conn.cursor()
         sql = "select SourceID, TargetID, Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, Status from DataForML where HasPredicted = 0 order by TargetID asc;"
@@ -43,6 +56,7 @@ class MachineLearningModel(object):
 
         # If no new data, it will return directly
         if data.empty:
+            print("No new data\nPrediction finished")
             return
 
         x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods']]
@@ -63,7 +77,13 @@ class MachineLearningModel(object):
 
             # Update prediction result to database
             self.updatePrediction(data['SourceID'][i], data['TargetID'][i], data['Age'][i], data['HasInfectedBefore'][i], data['Periods'][i], data['CloseContact'][i], data['ClosePeriods'][i], overallPrediction, isLast) 
-        
+
+        print("Prediction finished")
+
+        # Retrain the model every day
+        currentDate = datetime.today()
+        if self.lastTrainingTime.date() < currentDate.date():
+            self.training()
 
     def updatePrediction(self, sourceID, targetID, age, hasInfectedBefore, periods, closeContact, closePeriods, predict, isLast):
         cursor = self.conn.cursor()
@@ -90,9 +110,15 @@ class MachineLearningModel(object):
 
 def main():
     predictionModel = MachineLearningModel()
-    predictionModel.predict()
-    # print(predictionModel.predictOnce(1, 50, 0, 1000, 1, 500))
-    # print(predictionModel.predictOnce(1, 25, 1, 1000, 0, 0))
+
+    # Start prediction
+    while True:
+        try:
+            predictionModel.predict()
+        except Exception as e: 
+            print(e)
+        # Sleep 60 seconds then continue to the next iteration
+        time.sleep(60)
 
 if __name__ == "__main__":
     main()
