@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import BackgroundTasks
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -13,18 +15,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        BGTaskScheduler.shared.cancelAllTaskRequests()
+
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         
-        var Loggedin:Bool = true   // assume user is logged in
+        
+        let Loggedin:Bool = UserDefaults.standard.bool(forKey: "loggedIn")   // assume user is logged in
         
         if let windowScene = scene as? UIWindowScene{
         let window = UIWindow(windowScene: windowScene)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let LoginVC = storyboard.instantiateViewController(withIdentifier: "Login") as! LoginVC
-        let TabBar = storyboard.instantiateViewController(withIdentifier: "TabBar")
+        let TabBar = storyboard.instantiateViewController(withIdentifier: "TabBar") as! UITabBarController
         let initialVC = Loggedin ? TabBar : LoginVC
         
         window.rootViewController = initialVC // Your RootViewController in here
@@ -57,6 +62,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+//        print("Backgrounded")
+//        (UIApplication.shared.delegate as! AppDelegate).scheduleBackgroundPokemonFetch()
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.

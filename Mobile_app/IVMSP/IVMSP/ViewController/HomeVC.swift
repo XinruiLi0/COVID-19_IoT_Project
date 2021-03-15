@@ -11,6 +11,8 @@ import CoreNFC
 class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     
     var userEmail = "1181536731@qq.com"
+    var userPassword = "1181536731"
+    var alerted = false
     var deviceID = "None" {
         didSet{
             self.textView.text = deviceID
@@ -27,6 +29,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
             
         }
     }
+    @IBOutlet var backview: UIView!
     
     
     @IBOutlet  var textView: UITextView!
@@ -39,6 +42,17 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
+        
+        DispatchQueue.global(qos: .background).async {
+            while (!self.alerted) {
+                sleep(1)
+                self.selfCheck(userEmail: self.userEmail, userPassword: self.userPassword)
+                
+            }
+            
+            
+        }
+        
         
     }
     
@@ -111,7 +125,10 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         var urlComps = checkedInFlag ? URLComponents(string: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/leavingVisitorUpdate")! : URLComponents(string: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/visitorDetect")!
         
         
-        let queryItems = [URLQueryItem(name: "deviceID", value: deviceID), URLQueryItem(name: "visitorEmail", value: visitorEmail)]
+        let queryItems = checkedInFlag ? [URLQueryItem(name: "deviceID", value: deviceID), URLQueryItem(name: "visitorEmail", value: visitorEmail),URLQueryItem(name: "isMaunalUpdate", value: "0"),URLQueryItem(name: "closeContactlist", value: "{}")]: [URLQueryItem(name: "deviceID", value: deviceID), URLQueryItem(name: "visitorEmail", value: visitorEmail)]
+        
+        
+        
         urlComps.queryItems = queryItems
         
         print (urlComps.url!)
@@ -124,21 +141,114 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
             
             if let data = data {
                 do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    
-                    // if success
-                    DispatchQueue.main.async {
-                        self.checkedInFlag.toggle()
+                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
+                        print(json)
+                        if let result = json["result"] as? String {
+                            
+                            if (result != "success"){
+                                DispatchQueue.main.async {
+                                    let alert = UIAlertController(title: "Alert", message: "The operation failed. \n Please ask staff for help." , preferredStyle: UIAlertController.Style.alert)
+                                    
+                                    // add the actions (buttons)
+                                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
+                                    
+                                    // show the alert
+                                    self.present(alert, animated: true, completion: nil)
+                                    
+                                    
+                                }
+                                
+                            } else{
+                                DispatchQueue.main.async {
+                                    self.checkedInFlag.toggle()
+                                }
+                            }
+                            print(result)
+                        }
                     }
-                    // else alert failed
+                
                     
-                    print(json)
+                    
                 } catch {
+                    print(error)
+                    DispatchQueue.main.async {
+                        let alert = UIAlertController(title: "Alert", message: "The operation failed. \n Please ask staff for help." , preferredStyle: UIAlertController.Style.alert)
+                        
+                        // add the actions (buttons)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
+                        
+                        // show the alert
+                        self.present(alert, animated: true, completion: nil)
+                        
+                        
+                    }
+                }
+            }
+            
+        }.resume()
+    }
+    
+    func selfCheck(userEmail: String, userPassword: String){
+        
+        var urlComps = URLComponents(string: "http://ivmsp.us-east-1.elasticbeanstalk.com/Home/checkUserStatus")!
+        
+        
+        let queryItems = [URLQueryItem(name: "userEmail", value: userEmail), URLQueryItem(name: "userPassword", value: userPassword)]
+        urlComps.queryItems = queryItems
+        
+        print (urlComps.url!)
+        
+        var request = URLRequest(url: urlComps.url!)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let data = data {
+                do {
+                    
+                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        if let contectEvent = json["1"] as? [String: Any] {
+                            if (contectEvent.count >= 3){
+                                self.alerted = true
+                                
+                                let Address = contectEvent["Address"] as! String
+                                let StartTime = contectEvent["StartTime"] as! String
+                                let EndTime = contectEvent["EndTime"] as! String
+                                let alertmsg1 = "You may have contact with a COVID-19 carrier at " + Address
+                                let alertmsg2 = " from " + StartTime + " to " + EndTime
+                                
+                                DispatchQueue.main.async {
+                                    self.backview.backgroundColor = UIColor.red
+                                    // create the alert
+                                    let alert = UIAlertController(title: "Alert", message:alertmsg1 + alertmsg2, preferredStyle: UIAlertController.Style.alert)
+                                    
+                                    // add the actions (buttons)
+                                    alert.addAction(UIAlertAction(title: "Received", style: UIAlertAction.Style.cancel, handler: nil))
+                                    
+                                    // show the alert
+                                    self.present(alert, animated: true, completion: nil)
+                                    
+                                }
+                            }
+                            
+                            print(contectEvent)
+                            
+                            print(contectEvent.count)
+                        }
+                        
+                        // if success
+                        // else alert failed
+                        
+                        //print(json)
+                    }
+                }catch {
                     print(error)
                 }
             }
             
         }.resume()
+        
     }
     
     
