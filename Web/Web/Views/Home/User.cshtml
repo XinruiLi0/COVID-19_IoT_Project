@@ -34,13 +34,11 @@
                 data: { "userEmail": getUserEmail, "userPassword": getUserPassword },
                 success: function (data) {
                     var obj = JSON.parse(data);
-                    var status;
-                    var pred;
-                    for (var i = 0; i < Object.keys(obj).length; i++) {
-                        status = obj[i].UserStatus;
-                        pred = obj[i].Predict;
-                    }
-                    if (pred == "1") {
+                    var status = obj[0].UserStatus;
+                    var pred = obj[0].Predict;
+                    var contact = obj[1].Address;
+
+                    if (pred != "0" || contact != ""){
                         alert("You are predicted to infected by COVID-19, please stay at home.")
                     }
                     $('#vistorName').html(userName);
