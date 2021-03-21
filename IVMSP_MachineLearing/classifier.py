@@ -25,7 +25,7 @@ class MachineLearningModel(object):
         self.training()
 
     def training(self):
-        print("Training model at " + str(datetime.now()))
+        print("Training ML model at " + str(datetime.now()))
 
         # Prepare training data
         cursor = self.conn.cursor()
@@ -56,9 +56,14 @@ class MachineLearningModel(object):
 
         # If no new data, it will return directly
         if data.empty:
-            print("No new data\nPrediction finished")
+            print("No new data\nWaitting for next prediction")
+            # Retrain the model every day
+            currentDate = datetime.today()
+            if self.lastTrainingTime.date() < currentDate.date():
+                self.training()
             return
 
+        print("New data detected, start the prediction")
         x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods']]
         y = self.model.predict(x);
 
