@@ -25,14 +25,14 @@ class MachineLearningModel(object):
         self.training()
 
     def training(self):
-        print("Training model at " + str(datetime.now()))
+        print("Training ML model at " + str(datetime.now()))
 
         # Prepare training data
         cursor = self.conn.cursor()
-        sql = "select Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, Status from DataForML;"
+        sql = "select Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, distance, Status from DataForML;"
         data = pd.read_sql(sql,self.conn)
 
-        x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods']]
+        x = data[['Age','HasInfectedBefore','Periods','CloseContact', 'ClosePeriods', 'distance']]
         y = data["Status"]
 
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=0)
@@ -51,15 +51,20 @@ class MachineLearningModel(object):
 
         # Collect training data
         cursor = self.conn.cursor()
-        sql = "select SourceID, TargetID, Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, Status from DataForML where HasPredicted = 0 order by TargetID asc;"
+        sql = "select SourceID, TargetID, Age, HasInfectedBefore, Periods, CloseContact, ClosePeriods, distance, Status from DataForML where HasPredicted = 0 order by TargetID asc;"
         data = pd.read_sql(sql,self.conn)
 
         # If no new data, it will return directly
         if data.empty:
-            print("No new data\nPrediction finished")
+            print("No new data\nWaitting for next prediction")
+            # Retrain the model every day
+            currentDate = datetime.today()
+            if self.lastTrainingTime.date() < currentDate.date():
+                self.training()
             return
 
-        x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods']]
+        print("New data detected, start the prediction")
+        x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods', 'distance']]
         y = self.model.predict(x);
 
         overallPrediction = 0;
@@ -76,7 +81,7 @@ class MachineLearningModel(object):
                 isLast = 1
 
             # Update prediction result to database
-            self.updatePrediction(data['SourceID'][i], data['TargetID'][i], data['Age'][i], data['HasInfectedBefore'][i], data['Periods'][i], data['CloseContact'][i], data['ClosePeriods'][i], overallPrediction, isLast) 
+            self.updatePrediction(data['SourceID'][i], data['TargetID'][i], data['Age'][i], data['HasInfectedBefore'][i], data['Periods'][i], data['CloseContact'][i], data['ClosePeriods'][i], data['distance'][i], overallPrediction, isLast) 
 
         print("Prediction finished")
 
@@ -85,27 +90,25 @@ class MachineLearningModel(object):
         if self.lastTrainingTime.date() < currentDate.date():
             self.training()
 
-    def updatePrediction(self, sourceID, targetID, age, hasInfectedBefore, periods, closeContact, closePeriods, predict, isLast):
+    def updatePrediction(self, sourceID, targetID, age, hasInfectedBefore, periods, closeContact, closePeriods, distance, predict, isLast):
         cursor = self.conn.cursor()
-        sql = "select UserStatus, predict from HealthStatus where ID = " + str(targetID) + ";"
+        sql = "select UserStatus, predict, DATEDIFF(day, lastPredict, getdate()) as lastPredict from HealthStatus where ID = " + str(targetID) + ";"
         data = pd.read_sql(sql,self.conn)
 
         sql1 = ""
         if isLast == 1 and int(data['UserStatus'][0]) == 0:
             if predict > 0: 
-                sql1 = "update HealthStatus set Predict = 1 where ID = " + str(targetID) + ";"
-            elif int(data['predict'][0]) > 14:
-                sql1 = "update HealthStatus set Predict = 0 where ID = " + str(targetID) + ";"
-            elif int(data['predict'][0]) > 0:
-                sql1 = "update HealthStatus set Predict = " + str(int(data['predict'][0]) + 1) + " where ID = " + str(targetID) + ";"
-        
-        sql2 = "update DataForML set HasPredicted = 1 where SourceID = " + str(sourceID) + " and TargetID = " + str(targetID) + " and Age = " + str(age) + " and HasInfectedBefore = " + str(hasInfectedBefore) + " and Periods = " + str(periods) + " and CloseContact = " + str(closeContact) + " and ClosePeriods = " + str(closePeriods) + ";"
+                sql1 = "update HealthStatus set Predict = 1, lastPredict = GETDATE() where ID = " + str(targetID) + ";"
+            elif int(data['lastPredict'][0]) > 14:
+                sql1 = "update HealthStatus set Predict = 0, lastPredict = GETDATE() where ID = " + str(targetID) + ";"
+            
+        sql2 = "update DataForML set HasPredicted = 1 where SourceID = " + str(sourceID) + " and TargetID = " + str(targetID) + " and Age = " + str(age) + " and HasInfectedBefore = " + str(hasInfectedBefore) + " and Periods = " + str(periods) + " and CloseContact = " + str(closeContact) + " and ClosePeriods = " + str(closePeriods) + " and distance = " + str(distance) + ";"
         cursor.execute(sql1 + sql2)
         self.conn.commit()
 
-    def predictOnce(self, id, age, hasInfectedBefore, periods, closeContact, closePeriods):
+    def predictOnce(self, id, age, hasInfectedBefore, periods, closeContact, closePeriods, distance):
 
-        predictData = self.model.predict([[age, hasInfectedBefore, periods, closeContact, closePeriods]])
+        predictData = self.model.predict([[age, hasInfectedBefore, periods, closeContact, closePeriods, distance]])
         return predictData[0]
 
 def main():

@@ -145,11 +145,20 @@ For User App & Web:
 				"visitorEmail": "b",
 				"isMaunalUpdate": 0,
 				"closeContactList": 
-				{
-					"First Bluetooth ID": "10",		// Value is contact period in second
-					"Second Bluetooth ID": "12",
+				[
+					{
+						"bID": 2,		
+						"period": 10,
+						"distance": 1.5,
+						
+					},
+					{
+						"bID": 3,		
+						"period": 100,
+						"distance": 2,
+					}
 					...
-				}
+				]
 			}
 		return data:
 			example:
