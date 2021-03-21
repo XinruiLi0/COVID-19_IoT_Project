@@ -535,7 +535,7 @@ namespace Web.Models
 
             try
             {
-                executeQuery($"update HealthStatus set UserStatus = {status}, Predict = {status} where ID = {VisitorID}");
+                executeQuery($"update HealthStatus set UserStatus = {status}, Predict = {status}, lastPredict = GETDATE() where ID = {VisitorID}");
             }
             catch (Exception e)
             {
