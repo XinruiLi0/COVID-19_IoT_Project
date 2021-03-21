@@ -92,18 +92,16 @@ class MachineLearningModel(object):
 
     def updatePrediction(self, sourceID, targetID, age, hasInfectedBefore, periods, closeContact, closePeriods, predict, isLast):
         cursor = self.conn.cursor()
-        sql = "select UserStatus, predict from HealthStatus where ID = " + str(targetID) + ";"
+        sql = "select UserStatus, predict, DATEDIFF(day, lastPredict, getdate()) as lastPredict from HealthStatus where ID = " + str(targetID) + ";"
         data = pd.read_sql(sql,self.conn)
 
         sql1 = ""
         if isLast == 1 and int(data['UserStatus'][0]) == 0:
             if predict > 0: 
-                sql1 = "update HealthStatus set Predict = 1 where ID = " + str(targetID) + ";"
-            elif int(data['predict'][0]) > 14:
-                sql1 = "update HealthStatus set Predict = 0 where ID = " + str(targetID) + ";"
-            elif int(data['predict'][0]) > 0:
-                sql1 = "update HealthStatus set Predict = " + str(int(data['predict'][0]) + 1) + " where ID = " + str(targetID) + ";"
-        
+                sql1 = "update HealthStatus set Predict = 1, lastPredict = GETDATE() where ID = " + str(targetID) + ";"
+            elif int(data['lastPredict'][0]) > 14:
+                sql1 = "update HealthStatus set Predict = 0, lastPredict = GETDATE() where ID = " + str(targetID) + ";"
+            
         sql2 = "update DataForML set HasPredicted = 1 where SourceID = " + str(sourceID) + " and TargetID = " + str(targetID) + " and Age = " + str(age) + " and HasInfectedBefore = " + str(hasInfectedBefore) + " and Periods = " + str(periods) + " and CloseContact = " + str(closeContact) + " and ClosePeriods = " + str(closePeriods) + ";"
         cursor.execute(sql1 + sql2)
         self.conn.commit()
