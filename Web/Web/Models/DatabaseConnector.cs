@@ -274,7 +274,7 @@ namespace Web.Models
         private static void importDataToML(int id)
         {
             // Import unexisted data
-            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], CloseContact, ClosePeriods, [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
+            executeQuery($"insert into DataForML(SourceID, TargetID, Age, HasInfectedBefore, StartTime, [Periods], CloseContact, ClosePeriods, distance, [Status]) select PersonalContact.ID as SourceID, Contact_ID as TargetID, Age, HasInfectedBefore, StartTime, DATEDIFF(second, StartTime, EndTime) as [Periods], CloseContact, ClosePeriods, distance, UserStatus as [Status] from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 0");
             // Update existed data
             executeQuery($"update DataForML set[Status] = 1 where TargetID = {id} and SourceID in (select Contact_ID as SourceID from PersonalContact join HealthStatus on PersonalContact.Contact_ID = HealthStatus.ID where PersonalContact.ID = {id} and UserStatus = 1)");
         }
@@ -976,13 +976,21 @@ namespace Web.Models
             }
 
             // Prepare bluetooth update
-            var closeContactInfo = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(closeContactList);
-            var tempID = new Dictionary<string, string>();
-            Parallel.ForEach(closeContactInfo, (i) => {
-                var temp = DataTableToDictionary(executeQuery($"select ID from AccountLogin where BluetoothID = '{i.Key}'"));
-                tempID.Add(temp[0]["ID"], i.Key);
-            });
-            var closeContactID = new ConcurrentDictionary<string, string>(tempID);
+            var closeContactInfo = JsonConvert.DeserializeObject<ConcurrentBag<ConcurrentDictionary<string, string>>>(closeContactList);
+            try
+            {
+                Parallel.ForEach(closeContactInfo, (i) => {
+                    var temp = DataTableToDictionary(executeQuery($"select ID from AccountLogin where BluetoothID = '{i["bID"]}'"));
+                    i.TryAdd("ID", temp[0]["ID"]);
+                });
+            }
+            catch (Exception e)
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"result","error"}, {"message", e.ToString()}
+                    };
+            }
 
             // Update records
             try
@@ -997,13 +1005,17 @@ namespace Web.Models
 
                             var closeContact = 0;
                             var closeContactPeriods = 0;
-
-                            if (closeContactID.ContainsKey(v["Visitor_ID"]))
+                            var distance = 60.0;
+                            foreach(ConcurrentDictionary<string, string> c in closeContactInfo)
                             {
-                                closeContact = 1;
-                                closeContactPeriods = int.Parse(closeContactInfo[closeContactID[v["Visitor_ID"]]]);
+                                if (int.Parse(c["ID"]) == int.Parse(v["Visitor_ID"]))
+                                {
+                                    closeContact = 1;
+                                    closeContactPeriods = int.Parse(c["period"]);
+                                    distance = float.Parse(c["distance"]);
+                                }
                             }
-                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {visitorID} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {visitorID} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {visitorID} and StartTime in (select max(StartTime) from PersonalContact where ID = {v["Visitor_ID"]} and Contact_ID = {visitorID})))");
+                            executeQuery($"update PersonalContact set EndTime = GETDATE(), CloseContact = {closeContact}, ClosePeriods = {closeContactPeriods}, distance = {distance}, ManualUpdate = {isMaunalUpdate} where Guard_ID = {GuardInfo["ID"]} and EndTime is null and ((ID = {visitorID} and Contact_ID = {v["Visitor_ID"]} and StartTime in (select max(StartTime) from PersonalContact where ID = {visitorID} and Contact_ID = {v["Visitor_ID"]})) or (ID = {v["Visitor_ID"]} and Contact_ID = {visitorID} and StartTime in (select max(StartTime) from PersonalContact where ID = {v["Visitor_ID"]} and Contact_ID = {visitorID})))");
                         });
                     },
                     () =>
