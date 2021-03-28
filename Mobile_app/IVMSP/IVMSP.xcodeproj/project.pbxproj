@@ -15,6 +15,7 @@
 		59B2299125A6B67900811EAB /* BluetoothVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B2299025A6B67900811EAB /* BluetoothVC.swift */; };
 		59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */; };
 		59BA9E4C2570AD0300F7E015 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */; };
+		59BF205E25AE55BD008D721C /* selfSizingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BF205D25AE55BD008D721C /* selfSizingTableViewCell.swift */; };
 		59CD125E255E023900D2AE6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125D255E023900D2AE6B /* AppDelegate.swift */; };
 		59CD1260255E023900D2AE6B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD125F255E023900D2AE6B /* SceneDelegate.swift */; };
 		59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD1261255E023900D2AE6B /* LoginVC.swift */; };
@@ -33,6 +34,7 @@
 		59B2299025A6B67900811EAB /* BluetoothVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothVC.swift; sourceTree = "<group>"; };
 		59BA9E472570826100F7E015 /* UIViewController_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController_Extensions.swift; sourceTree = "<group>"; };
 		59BA9E4B2570AD0200F7E015 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
+		59BF205D25AE55BD008D721C /* selfSizingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = selfSizingTableViewCell.swift; sourceTree = "<group>"; };
 		59CD125A255E023900D2AE6B /* IVMSP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IVMSP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59CD125D255E023900D2AE6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59CD125F255E023900D2AE6B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				59B2299025A6B67900811EAB /* BluetoothVC.swift */,
 				5910DEF725A14CC00014D98F /* MeVC.swift */,
 				594D31C325A7B7CD00C42229 /* QRscanVC.swift */,
+				59BF205D25AE55BD008D721C /* selfSizingTableViewCell.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5910DEF825A14CC00014D98F /* MeVC.swift in Sources */,
+				59BF205E25AE55BD008D721C /* selfSizingTableViewCell.swift in Sources */,
 				59BA9E482570826100F7E015 /* UIViewController_Extensions.swift in Sources */,
 				5952FB7925995D6800958711 /* HomeVC.swift in Sources */,
 				59CD1262255E023900D2AE6B /* LoginVC.swift in Sources */,
