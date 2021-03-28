@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace IVMSPUnitTest
 {
     [TestClass]
-    public class HomeController
+    public class HomeControllerTest
     {
         private ILogger<Web.Controllers.HomeController> _logger;
 
