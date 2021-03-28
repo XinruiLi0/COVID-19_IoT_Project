@@ -13,11 +13,7 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
     var userEmail = "1181536731@qq.com"
     var userPassword = "1181536731"
     var alerted = false
-    var deviceID = "None" {
-        didSet{
-            self.textView.text = deviceID
-        }
-    }
+    var deviceID = "None"
     
     var checkedInFlag: Bool = false {
         didSet{
@@ -43,6 +39,8 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
+        
+        self.textView.text = "Health Status:\n Good"
         DispatchQueue.global(qos: .background).async {
             while (!self.alerted) {
                 sleep(1)
@@ -218,7 +216,13 @@ class HomeVC: UIViewController, NFCTagReaderSessionDelegate {
                                 let alertmsg1 = "You may have contact with a COVID-19 carrier at " + Address
                                 let alertmsg2 = " from " + StartTime + " to " + EndTime
                                 
+                                
+                                
                                 DispatchQueue.main.async {
+                                    
+                                    self.textView.text = "You may have contact with a COVID-19 carrier \n Plase see a doctor"
+                             //       self.checkINOUTbutton.isEnabled = false
+                                    
                                     self.backview.backgroundColor = UIColor.red
                                     // create the alert
                                     let alert = UIAlertController(title: "Alert", message:alertmsg1 + alertmsg2, preferredStyle: UIAlertController.Style.alert)
