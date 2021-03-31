@@ -21,6 +21,7 @@ namespace Web.Controllers
 
         public IActionResult Doctor()
         {
+            ViewData["Title"] = "Doctor";
             return View();
         }
 

@@ -38,8 +38,9 @@
                     var pred = obj[0].Predict;
                     var contact = obj[1].Address;
 
-                    if (pred != "0" || contact != ""){
-                        alert("You are predicted to infected by COVID-19, please stay at home.")
+                    if (pred != "0" || contact != "") {
+
+                        alert("You have close contact at address" + contact+ "\n Therefore, you are predicted to infected by COVID-19, please stay at home.")
                     }
                     $('#vistorName').html(userName);
                     if (status == "0") {
