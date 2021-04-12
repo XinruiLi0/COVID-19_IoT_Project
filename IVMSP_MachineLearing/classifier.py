@@ -41,9 +41,11 @@ class MachineLearningModel(object):
         self.model = LogisticRegression()
         self.model.fit(x_train, y_train)
 
+        print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(self.model.score(x_test, y_test)))
+
         # Store last training time for retraining purpose
         self.lastTrainingTime = datetime.today()
-        print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(self.model.score(x_test, y_test)))
+
         print("Training finished")
 
     def predict(self):
@@ -66,6 +68,10 @@ class MachineLearningModel(object):
         print("New data detected, start the prediction")
         x = data[['Age','HasInfectedBefore','Periods','CloseContact','ClosePeriods', 'distance']]
         y = self.model.predict(x);
+        print("Input Data:");
+        print(x);
+        print("Prediction Result:");
+        print(y);
 
         overallPrediction = 0;
         isLast = 0;
