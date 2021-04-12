@@ -43,7 +43,7 @@ class MachineLearningModel(object):
 
         # Store last training time for retraining purpose
         self.lastTrainingTime = datetime.today()
-
+        print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(self.model.score(x_test, y_test)))
         print("Training finished")
 
     def predict(self):
